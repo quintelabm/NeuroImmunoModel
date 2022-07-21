@@ -22,7 +22,7 @@ gradiente = lambda ponto_posterior, ponto_anterior, valor_maximo: quimiotaxia(po
 quimiotaxia = lambda ponto_atual, valor_maximo: ponto_atual/(valor_maximo + ponto_atual)
 f_func = lambda populacao, valor_maximo: populacao*populacao/(valor_maximo + populacao)
 
-T_final = 28# Dia
+T_final = 5# Dia
 h_t = 0.0002
 
 L = 20  # Comprimento da malha
@@ -33,7 +33,7 @@ x = np.linspace(0, L, int(L/h_x))
 tam = len(x)
 steps = len(t)
 
-num_figuras = T_final
+num_figuras = 10#T_final
 intervalo_figs = int(steps/num_figuras)
 
 def verifica_cfl(difusao_mic, difusao_dc, difusao_da, quimiotaxia_dc, quimiotaxia_mic):
@@ -42,6 +42,7 @@ def verifica_cfl(difusao_mic, difusao_dc, difusao_da, quimiotaxia_dc, quimiotaxi
     else:
         return False
 
+#*********************POSICIONANDO BV E LV************************
 V_BV = 0
 V_LV = 0
 
@@ -106,7 +107,7 @@ mic_anterior = np.zeros((int(L/h_x), int(L/h_x)))
 
 for i in range(int(L/h_x)):
     for j in range(int(L/h_x)):
-        if (i-int(L/h_x)/2)**2 + (j-int(L/h_x)/2)**2 < 20/(2.5**2):
+        if ((i-int(L/h_x)/2)**2)/8 + ((j-int(L/h_x)/2)**2)/2 < 3.2:
             mic_anterior[i][j] = mic_media/3.0
 
 # T citotóxica
@@ -393,17 +394,12 @@ for k in range(1,steps):
     DendriticasTecido = 0
     AnticorposTecido = 0
     TcitotoxicaTecido = 0
-
+    
     for i in range(int(L/h_x)):
         for j in range(int(L/h_x)):
             if theta_LV[i][j] == 1:
-                if k%intervalo_figs ==0:
-                    print("DA-ponto: " + str(dendritica_ativ_atual[i][j]))
                 DendriticasTecido += dendritica_ativ_atual[i][j]
             if theta_BV[i][j] == 1:
-                if k%intervalo_figs ==0:
-                    print("AT-ponto: " + str(anticorpo_atual[i][j]))
-                    print("TCD8-ponto: " + str(t_cito_atual[i][j]))
                 AnticorposTecido += anticorpo_atual[i][j]
                 TcitotoxicaTecido += t_cito_atual[i][j]
 
@@ -426,9 +422,7 @@ for k in range(1,steps):
         printMesh(k,t_cito_anterior, "tke")
         printMesh(k,anticorpo_anterior, "anticorpo")
         print("Tempo: "+ str(k*h_t))
-        print("DA: " + str(parameters["DendriticasTecido"]))
-        print("TC: " + str(parameters["AnticorposTecido"]))
-        print("AT: " + str(parameters["TcitotoxicaTecido"]))
+        print("DC-T: " + str(DendriticasTecido))
 
 #Fim da contagem do tempo
 toc = time.perf_counter()
