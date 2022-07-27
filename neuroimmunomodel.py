@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import random as rnd
 import seaborn as sns
 import time
 import os
@@ -49,14 +50,16 @@ V_LV = 0
 theta_LV = np.zeros((int(L/h_x), int(L/h_x)))
 for i in range(int(L/h_x)):
     for j in range(int(L/h_x)):
-        if (i == L/h_x - 1 and j == L/(h_x*2)) or (i == 0 and j == L/(h_x*2)) or (i == L/(h_x*2) and j == 0) or (i == L/(h_x*2) and j == L/h_x - 1) or (i == int(L/h_x)/2 and j == int(L/h_x)/2):
+        prob = rnd.uniform(0,1)
+        if prob <= .1:
             theta_LV[i][j] = 1
             V_LV += 1
 
 theta_BV = np.zeros((int(L/h_x), int(L/h_x)))
 for i in range(int(L/h_x)):
     for j in range(int(L/h_x)):
-        if (i == L/h_x - 1 and j == L/h_x - 1) or (i == 0 and j == L/h_x - 1) or (i == L/h_x - 1 and j == 0) or (i == 0 and j == 0):
+        prob = rnd.uniform(0,1)
+        if prob <= .1:
             theta_BV[i][j] = 1
             V_BV += 1
 
@@ -81,7 +84,7 @@ def checkBVeLV():
     plt.show()
     plt.clf()
 
-# checkBVeLV()
+checkBVeLV()
 
 def calculaQuimiotaxia(ponto_posterior_j, ponto_anterior_j, ponto_posterior_i, ponto_anterior_i, ponto_atual, valor_medio, gradiente_odc_i, gradiente_odc_j):
     gradiente_pop_i = 0
