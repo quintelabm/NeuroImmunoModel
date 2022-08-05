@@ -26,14 +26,14 @@ T_final = 1# Dia
 h_t = 0.0002
 
 L = 20  # Comprimento da malha
-h_x = 0.2
+h_x = 0.5
 
 t = np.linspace(0, T_final, int(T_final/h_t))
 x = np.linspace(0, L, int(L/h_x))
 tam = len(x)
 steps = len(t)
 
-num_figuras = 10#T_final
+num_figuras = T_final
 intervalo_figs = int(steps/num_figuras)
 
 def verifica_cfl(difusao_mic, difusao_dc, difusao_da, quimiotaxia_dc, quimiotaxia_mic):
@@ -135,14 +135,14 @@ dendritica_conv_atual = np.zeros((int(L/h_x), int(L/h_x)))
 dendritica_ativ_atual = np.zeros((int(L/h_x), int(L/h_x)))
 
 # Modelo linfonodo
-estable_B = 8.4*10**-4
-estable_T_c = 8.4*10**-3
-estable_T_h = 8.4*10**-3
+estable_B = 8.4*10**-2
+estable_T_c = 8.4
+estable_T_h = 8.4
 linfonodo_eqs = np.zeros(5)
 linfonodo_eqs[0]= 0    # Dendritic cells
 linfonodo_eqs[1]= 0.2  # Cytotoxic T cells
-linfonodo_eqs[2]= 0.4  # Helper T cells
-linfonodo_eqs[3]= estable_B    # B cells
+linfonodo_eqs[2]= estable_T_h/2  # Helper T cells
+linfonodo_eqs[3]= estable_B/2    # B cells
 linfonodo_eqs[4]= 0    # Antibodies
 
 #Valores das populaçoes que migram que estão em contato com os vasos sanguineos ou linfaticos
@@ -422,7 +422,7 @@ for k in range(1,steps):
         printMesh(k,t_cito_anterior, "tke")
         printMesh(k,anticorpo_anterior, "anticorpo")
         print("Tempo: "+ str(k*h_t))
-        print("DC-T: " + str(DendriticasTecido))
+        print("IgG-T: " + str(AnticorposTecido))
 
 #Fim da contagem do tempo
 toc = time.perf_counter()
