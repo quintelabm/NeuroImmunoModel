@@ -60,7 +60,7 @@ for i in range(int(L/h_x)):
             theta_BV[i][j] = 1
             V_BV += 1
 
-V_LN = 160
+V_LN = 1.6#160
 
 def checkBVeLV():
     x_pts, y_pts = np.meshgrid(x, x)
@@ -206,9 +206,9 @@ parameters = {
     "r_t": 0.1 , # agressividade de t citotoxica(procurar na literatura)
 
     "mu_dc": 60*24*3*10**-4, #Taxa de producao de células dendríticas (procurar na literatura)
-    "gamma_D": 1,#0.01, #Taxa de migração de DC ativadas para o linfonodo (procurar na literatura)
-    "gamma_F": 3,#0.03, #Taxa de migração de anticorpos para o tecido (procurar na literatura)
-    "gamma_T": 20,#0.2, #Taxa de migração de T citotoxica para o tecido (procurar na literatura)
+    "gamma_D": 0.01, #Taxa de migração de DC ativadas para o linfonodo (procurar na literatura)
+    "gamma_F": 0.03, #Taxa de migração de anticorpos para o tecido (procurar na literatura)
+    "gamma_T": 0.2, #Taxa de migração de T citotoxica para o tecido (procurar na literatura)
 
     "t_cito_media": 37,
     "dc_media": dc_media,
