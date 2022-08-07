@@ -135,12 +135,12 @@ dendritica_conv_atual = np.zeros((int(L/h_x), int(L/h_x)))
 dendritica_ativ_atual = np.zeros((int(L/h_x), int(L/h_x)))
 
 # Modelo linfonodo
-estable_B = 8.4*10**-2
-estable_T_c = 8.4
-estable_T_h = 8.4
+estable_B = 8.4*10**-4
+estable_T_c = 8.4*10**-3
+estable_T_h = 8.4*10**-3
 linfonodo_eqs = np.zeros(5)
 linfonodo_eqs[0]= 0    # Dendritic cells
-linfonodo_eqs[1]= 0.2  # Cytotoxic T cells
+linfonodo_eqs[1]= estable_T_c/2  # Cytotoxic T cells
 linfonodo_eqs[2]= estable_T_h/2  # Helper T cells
 linfonodo_eqs[3]= estable_B/2    # B cells
 linfonodo_eqs[4]= 0    # Antibodies
@@ -206,9 +206,9 @@ parameters = {
     "r_t": 0.1 , # agressividade de t citotoxica(procurar na literatura)
 
     "mu_dc": 60*24*3*10**-4, #Taxa de producao de células dendríticas (procurar na literatura)
-    "gamma_D": 0.01, #Taxa de migração de DC ativadas para o linfonodo (procurar na literatura)
-    "gamma_F": 0.03, #Taxa de migração de anticorpos para o tecido (procurar na literatura)
-    "gamma_T": 0.2, #Taxa de migração de T citotoxica para o tecido (procurar na literatura)
+    "gamma_D": 1,#0.01, #Taxa de migração de DC ativadas para o linfonodo (procurar na literatura)
+    "gamma_F": 3,#0.03, #Taxa de migração de anticorpos para o tecido (procurar na literatura)
+    "gamma_T": 20,#0.2, #Taxa de migração de T citotoxica para o tecido (procurar na literatura)
 
     "t_cito_media": 37,
     "dc_media": dc_media,
