@@ -59,8 +59,9 @@ for i in range(int(L/h_x)):
         if (i == L/h_x - 1 and j == L/h_x - 1) or (i == 0 and j == L/h_x - 1) or (i == L/h_x - 1 and j == 0) or (i == 0 and j == 0):
             theta_BV[i][j] = 1
             V_BV += 1
-
-V_LN = 1.6#160
+V_BV = V_BV*100
+V_LV = V_LV*100
+V_LN = 160
 
 def checkBVeLV():
     x_pts, y_pts = np.meshgrid(x, x)
