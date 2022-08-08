@@ -1,7 +1,5 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from SALib.sample import saltelli
-from SALib.analyze import sobol
 from linfonodo import diferential
 
 gradiente = lambda ponto_posterior, ponto_anterior, valor_maximo: quimiotaxia(ponto_posterior, valor_maximo) - quimiotaxia(ponto_anterior, valor_maximo)
@@ -14,7 +12,7 @@ T_final = 28# Dia
 h_t = 0.0002
 
 L = 20  # Comprimento da malha
-h_x = 0.2
+h_x = 0.5
 
 t = np.linspace(0, T_final, int(T_final/h_t))
 x = np.linspace(0, L, int(L/h_x))
@@ -495,30 +493,64 @@ rho_F_mean = 5.1*10**2
 estable_T_h_mean = 8.4*10**-3
 estable_B_mean = 8.4*10**-4
 estable_T_c_mean = 8.4*10**-3
-
 parameters = [chi_mean, d_mic_mean, mu_m_mean, r_m_mean, d_dc_mean, d_da_mean, d_t_cit_mean, d_anti_mean, lamb_f_m_mean, b_d_mean, r_dc_mean, r_t_mean, mu_dc_mean, gamma_D_mean, gamma_F_mean, gamma_T_mean, alpha_T_h_mean, alpha_T_c_mean, alpha_B_mean, b_T_mean, b_Tc_mean, b_rho_mean, b_rho_b_mean, rho_T_mean, rho_Tc_mean, rho_B_mean, rho_F_mean, estable_T_h_mean, estable_B_mean, estable_T_c_mean]
-#Execução do modelo base
-modelo(parameters[0],parameters[1],parameters[2],parameters[3],parameters[4],parameters[5],parameters[6],parameters[7],parameters[8],parameters[9],parameters[10],parameters[11],parameters[12],parameters[13],parameters[14],parameters[15],parameters[16],parameters[17],parameters[18],parameters[19],parameters[20],parameters[21],parameters[22],parameters[23],parameters[24],parameters[25],parameters[26],parameters[27],parameters[28],parameters[29])
-for i in range(len(parameters)):
-    parameter_aux = parameters[i]
-    parameters[i] = parameter_aux*1.1
+def runSAOaT():
+    parameters = [chi_mean, d_mic_mean, mu_m_mean, r_m_mean, d_dc_mean, d_da_mean, d_t_cit_mean, d_anti_mean, lamb_f_m_mean, b_d_mean, r_dc_mean, r_t_mean, mu_dc_mean, gamma_D_mean, gamma_F_mean, gamma_T_mean, alpha_T_h_mean, alpha_T_c_mean, alpha_B_mean, b_T_mean, b_Tc_mean, b_rho_mean, b_rho_b_mean, rho_T_mean, rho_Tc_mean, rho_B_mean, rho_F_mean, estable_T_h_mean, estable_B_mean, estable_T_c_mean]
+    #Execução do modelo base
     modelo(parameters[0],parameters[1],parameters[2],parameters[3],parameters[4],parameters[5],parameters[6],parameters[7],parameters[8],parameters[9],parameters[10],parameters[11],parameters[12],parameters[13],parameters[14],parameters[15],parameters[16],parameters[17],parameters[18],parameters[19],parameters[20],parameters[21],parameters[22],parameters[23],parameters[24],parameters[25],parameters[26],parameters[27],parameters[28],parameters[29])
-    parameters[i] = parameter_aux*.9
-    modelo(parameters[0],parameters[1],parameters[2],parameters[3],parameters[4],parameters[5],parameters[6],parameters[7],parameters[8],parameters[9],parameters[10],parameters[11],parameters[12],parameters[13],parameters[14],parameters[15],parameters[16],parameters[17],parameters[18],parameters[19],parameters[20],parameters[21],parameters[22],parameters[23],parameters[24],parameters[25],parameters[26],parameters[27],parameters[28],parameters[29])
-    parameters[i] = parameter_aux
+    for i in range(len(parameters)):
+        parameter_aux = parameters[i]
+        parameters[i] = parameter_aux*1.1
+        modelo(parameters[0],parameters[1],parameters[2],parameters[3],parameters[4],parameters[5],parameters[6],parameters[7],parameters[8],parameters[9],parameters[10],parameters[11],parameters[12],parameters[13],parameters[14],parameters[15],parameters[16],parameters[17],parameters[18],parameters[19],parameters[20],parameters[21],parameters[22],parameters[23],parameters[24],parameters[25],parameters[26],parameters[27],parameters[28],parameters[29])
+        parameters[i] = parameter_aux*.9
+        modelo(parameters[0],parameters[1],parameters[2],parameters[3],parameters[4],parameters[5],parameters[6],parameters[7],parameters[8],parameters[9],parameters[10],parameters[11],parameters[12],parameters[13],parameters[14],parameters[15],parameters[16],parameters[17],parameters[18],parameters[19],parameters[20],parameters[21],parameters[22],parameters[23],parameters[24],parameters[25],parameters[26],parameters[27],parameters[28],parameters[29])
+        parameters[i] = parameter_aux
 
-num_exec = len(parameters)*2 + 1
-output_file = np.zeros(num_exec)
-i = 0
-with open("returns.txt", "r") as f:
-    # output_file = f.readlines()
-    for y in f.read().split("\n"):
-        print(y)
-        if i == num_exec:
-            break
-        if type(y) == str:
-            output_file[i] = float(y)
-        i = i + 1
+    num_exec = len(parameters)*2 + 1
+    output_file = np.zeros(num_exec)
+    i = 0
+    with open("returns.txt", "r") as f:
+        # output_file = f.readlines()
+        for y in f.read().split("\n"):
+            print(y)
+            if i == num_exec:
+                break
+            if type(y) == str:
+                output_file[i] = float(y)
+            i = i + 1
 
-print(output_file)
-print("Done!")
+    print(output_file)
+    print("Done!")
+
+def readFile():
+    with open('outputSAOaT') as f:
+        lines = [float(line.rstrip()) for line in f]
+        return lines
+
+
+def avaliateOutputs():
+    outputs = readFile()
+    print("rr: " + str(outputs))
+    baseLineOutput = outputs[0]
+    sensitivityIndex = np.zeros(int(len(outputs)/2))
+    j = 0
+    for i in range(1, len(outputs)-1, 2):
+        #calcula delta Y
+        deltay = (outputs[i] - outputs[i+1])/baseLineOutput
+        print("+10%: " + str(outputs[i]) + " / -10%: " + str(outputs[i+1]))
+        #calcula delta p
+        deltap = (parameters[j]*1.1 - parameters[j]*0.9)/parameters[j]
+        #Coloca a divisão em um vetor
+        sensitivityIndex[j] = deltay/deltap
+        j = j + 1
+    return sensitivityIndex
+
+def printResult():
+    indexes = avaliateOutputs()
+    labels = ["chi","D_mic","mu_m","r_m","d_dc","d_da","d_t_cit","d_anti","lamb_f_m","b_d","r_dc","r_t","mu_dc","gamma_D","gamma_F","gamma_T","alpha_T_h","alpha_T_c","alpha_B","b_T","b_Tc","b_rho","b_rho_b","rho_T","rho_Tc","rho_B","rho_F","estable_T_h","estable_B","estable_T_c"]
+    plt.barh(labels, indexes, color ='maroon')
+    # plt.bar(labels, indexes, color ='maroon', width = .4)
+    # plt.show()
+    plt.savefig("SAOaT-Results.png", dpi = 900)
+
+printResult()
