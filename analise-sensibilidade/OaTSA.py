@@ -530,16 +530,17 @@ def readFile():
 
 def avaliateOutputs():
     outputs = readFile()
-    print("rr: " + str(outputs))
     baseLineOutput = outputs[0]
     sensitivityIndex = np.zeros(int(len(outputs)/2))
     j = 0
     for i in range(1, len(outputs)-1, 2):
         #calcula delta Y
         deltay = (outputs[i] - outputs[i+1])/baseLineOutput
-        print("+10%: " + str(outputs[i]) + " / -10%: " + str(outputs[i+1]))
+        # print("+10%: " + str(outputs[i]) + " / -10%: " + str(outputs[i+1]))
         #calcula delta p
+        #Por que tem que fazer esse cálculo?
         deltap = (parameters[j]*1.1 - parameters[j]*0.9)/parameters[j]
+        print(deltap)
         #Coloca a divisão em um vetor
         sensitivityIndex[j] = deltay/deltap
         j = j + 1
@@ -548,9 +549,9 @@ def avaliateOutputs():
 def printResult():
     indexes = avaliateOutputs()
     labels = ["chi","D_mic","mu_m","r_m","d_dc","d_da","d_t_cit","d_anti","lamb_f_m","b_d","r_dc","r_t","mu_dc","gamma_D","gamma_F","gamma_T","alpha_T_h","alpha_T_c","alpha_B","b_T","b_Tc","b_rho","b_rho_b","rho_T","rho_Tc","rho_B","rho_F","estable_T_h","estable_B","estable_T_c"]
-    plt.barh(labels, indexes, color ='maroon')
-    # plt.bar(labels, indexes, color ='maroon', width = .4)
-    # plt.show()
-    plt.savefig("SAOaT-Results.png", dpi = 900)
+    plt.bar(labels, indexes, color ='maroon', width = .4)
+    plt.show()
+    # plt.barh(labels, indexes, color ='maroon')
+    # plt.savefig("SAOaT-Results.png", dpi = 900)
 
 printResult()
