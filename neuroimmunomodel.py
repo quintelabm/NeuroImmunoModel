@@ -157,7 +157,9 @@ for i in range(int(L/h_x)):
         if theta_BV[i][j] == 1:
             AnticorposTecido += anticorpo_anterior[i][j]
             TcitotoxicaTecido += t_cito_anterior[i][j]
-
+DendriticasTecido = DendriticasTecido/V_LV
+AnticorposTecido = AnticorposTecido/V_BV
+TcitotoxicaTecido = TcitotoxicaTecido/V_BV
 #**********************Funcao print dos resultados*************************
 
 populationTitle = {
@@ -403,9 +405,9 @@ for k in range(1,steps):
                 AnticorposTecido += anticorpo_atual[i][j]
                 TcitotoxicaTecido += t_cito_atual[i][j]
 
-    parameters["TcitotoxicaTecido"] = TcitotoxicaTecido
-    parameters["DendriticasTecido"] = DendriticasTecido
-    parameters["AnticorposTecido"] = AnticorposTecido
+    parameters["TcitotoxicaTecido"] = TcitotoxicaTecido/V_BV
+    parameters["DendriticasTecido"] = DendriticasTecido/V_LV
+    parameters["AnticorposTecido"] = AnticorposTecido/V_BV
     
     linfonodo_eqs = [DL_atual, TL_c_atual, TL_h_atual, B_atual, FL_atual]
     DL_vetor[k] = DL_atual
