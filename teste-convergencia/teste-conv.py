@@ -1,14 +1,12 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from SALib.sample import saltelli
-from SALib.analyze import sobol
 from linfonodo import diferential
 
 gradiente = lambda ponto_posterior, ponto_anterior, valor_maximo: quimiotaxia(ponto_posterior, valor_maximo) - quimiotaxia(ponto_anterior, valor_maximo)
 quimiotaxia = lambda ponto_atual, valor_maximo: ponto_atual/(valor_maximo + ponto_atual)
 f_func = lambda populacao, valor_maximo: populacao*populacao/(valor_maximo + populacao)
 
-T_final = 1# Dia
+T_final = 28# Dia
 h_t = 0.0002
 
 L = 20  # Comprimento da malha
@@ -177,18 +175,18 @@ def printMesh(time, population, type):
 d_mic = (60*24*6.6/(2.5**2))*10**-5
 
 # def modelo(chi, d_mic, mu_m, r_m, d_dc, d_da, d_t_cit, d_anti, lamb_f_m, b_d, r_dc, r_t, mu_dc, gamma_D, gamma_F, gamma_T, alpha_T_h, alpha_T_c, alpha_B, b_T, b_Tc, b_rho, b_rho_b, rho_T, rho_Tc, rho_B, rho_F, estable_T_h, estable_B, estable_T_c):
-def modelo(mu_m, r_m, lamb_f_m):    
+def modelo():    
     linfonodo_eqs = np.zeros(5)
     
     chi = 0.298*60*2
     d_mic = 1520*10**-5
-    # mu_m = 60*24*3*10**-6
-    # r_m = 60*24*3.96*10**-6
+    mu_m = 60*24*3*10**-6
+    r_m = 60*24*3.96*10**-6
     d_dc = 1520*10**-5
     d_da = 1520*10**-5
     d_t_cit = 1520*10**-5
     d_anti = 1520*10**-4
-    # lamb_f_m = 60*24*3.96*10**-6
+    lamb_f_m = 60*24*3.96*10**-6
     b_d = 0.001
     r_dc = 0.001
     r_t = 0.1
@@ -469,7 +467,7 @@ def modelo(mu_m, r_m, lamb_f_m):
         for i in range(tam):
             for j in range(tam):
                 aux_qoi = aux_qoi + olide_atual[i][j]
-        qoi[k] = aux_qoi
+        qoi[k] = aux_qoi/(int(L/h_x))**2
         #Atualização da concentração das populações que migram.
         #Valores das populaçoes que migram que estão em contato com os vasos sanguineos ou linfaticos
         DendriticasTecido = 0
@@ -479,19 +477,14 @@ def modelo(mu_m, r_m, lamb_f_m):
         for i in range(int(L/h_x)):
             for j in range(int(L/h_x)):
                 if theta_LV[i][j] == 1:
-                    if k%intervalo_figs ==0:
-                        print("DA-ponto: " + str(dendritica_ativ_atual[i][j]))
                     DendriticasTecido += dendritica_ativ_atual[i][j]
                 if theta_BV[i][j] == 1:
-                    if k%intervalo_figs ==0:
-                        print("AT-ponto: " + str(anticorpo_atual[i][j]))
-                        print("TCD8-ponto: " + str(t_cito_atual[i][j]))
                     AnticorposTecido += anticorpo_atual[i][j]
                     TcitotoxicaTecido += t_cito_atual[i][j]
 
-        parameters["TcitotoxicaTecido"] = TcitotoxicaTecido
-        parameters["DendriticasTecido"] = DendriticasTecido
-        parameters["AnticorposTecido"] = AnticorposTecido
+        parameters["TcitotoxicaTecido"] = TcitotoxicaTecido/V_BV
+        parameters["DendriticasTecido"] = DendriticasTecido/V_LV
+        parameters["AnticorposTecido"] = AnticorposTecido/V_BV
         
         linfonodo_eqs = [DL_atual, TL_c_atual, TL_h_atual, B_atual, FL_atual]
         DL_vetor[k] = DL_atual
@@ -500,162 +493,7 @@ def modelo(mu_m, r_m, lamb_f_m):
         B_vetor[k] = B_atual
         FL_vetor[k] = FL_atual
     print("Terminei de rodar uma vez!")
-    outputFile = open("returns.txt", "a")
-    outputFile.write(str(qoi[-1]) + "\n")
+    outputFile = open("returnsConv.txt", "a")
+    outputFile.write(str(h_t) + "," + str(qoi[-1]) + "\n")
     outputFile.close()
     return qoi[-1]
-
-chi_mean = 0.298*60*2
-d_mic_mean = 1520*10**-5
-mu_m_mean = 60*24*3*10**-6
-r_m_mean = 60*24*3.96*10**-6
-d_dc_mean = 1520*10**-5
-d_da_mean = 1520*10**-5
-d_t_cit_mean = 1520*10**-5
-d_anti_mean = 1520*10**-4
-lamb_f_m_mean = 60*24*3.96*10**-6
-b_d_mean = 0.001
-r_dc_mean = 0.001
-r_t_mean = 0.1
-mu_dc_mean = 60*24*3*10**-4
-gamma_D_mean = 0.01
-gamma_F_mean = 0.03
-gamma_T_mean = 0.2
-alpha_T_h_mean = 0.01 
-alpha_T_c_mean = 0.5
-alpha_B_mean = 1
-b_T_mean = 0.017
-b_Tc_mean = 0.005
-b_rho_mean = 10**5
-b_rho_b_mean = 6.02*10**3
-rho_T_mean = 2
-rho_Tc_mean = 2
-rho_B_mean = 16
-rho_F_mean = 5.1*10**2
-estable_T_h_mean = 8.4*10**-3
-estable_B_mean = 8.4*10**-4
-estable_T_c_mean = 8.4*10**-3
-
-problem = {
-    'num_vars': 3,
-    'names': [ #'chi',
-        # 'd_mic',
-        'mu_m',
-        'r_m',
-        # 'd_dc',
-        # 'd_da',
-        # 'd_t_cit',
-        # 'd_anti',
-        'lamb_f_m'#,
-        # 'b_d',
-        # 'r_dc',
-        # 'r_t',
-        # 'mu_dc',
-        # 'gamma_D',
-        # 'gamma_F',
-        # 'gamma_T',
-        # 'alpha_T_h',
-        # 'alpha_T_c',
-        # 'alpha_B',
-        # 'b_T',
-        # 'b_Tc',
-        # 'b_rho',
-        # 'b_rho_b',
-        # 'rho_T',
-        # 'rho_Tc',
-        # 'rho_B',
-        # 'rho_F',
-        # 'estable_T_h',
-        # 'estable_B',
-        # 'estable_T_c'
-    ],
-    'bounds': [
-        # [0.9*chi_mean, 1.1*chi_mean],
-        # [0.9*d_mic_mean, 1.1*d_mic_mean],
-        [0.9*mu_m_mean, 1.1*mu_m_mean],
-        [0.9*r_m_mean, 1.1*r_m_mean],
-        # [0.9*d_dc_mean, 1.1*d_dc_mean],
-        # [0.9*d_da_mean, 1.1*d_da_mean],
-        # [0.9*d_t_cit_mean, 1.1*d_t_cit_mean],
-        # [0.9*d_anti_mean, 1.1*d_anti_mean],
-        [0.9*lamb_f_m_mean, 1.1*lamb_f_m_mean],
-        # [0.9*b_d_mean, 1.1*b_d_mean],
-        # [0.9*r_dc_mean, 1.1*r_dc_mean],
-        # [0.9*r_t_mean, 1.1*r_t_mean],
-        # [0.9*mu_dc_mean, 1.1*mu_dc_mean],
-        # [0.9*gamma_D_mean, 1.1*gamma_D_mean],
-        # [0.9*gamma_F_mean, 1.1*gamma_F_mean],
-        # [0.9*gamma_T_mean, 1.1*gamma_T_mean],
-        # [0.9*alpha_T_h_mean, 1.1*alpha_T_h_mean],
-        # [0.9*alpha_T_c_mean, 1.1*alpha_T_c_mean],
-        # [0.9*alpha_B_mean, 1.1*alpha_B_mean],
-        # [0.9*b_T_mean, 1.1*b_T_mean],
-        # [0.9*b_Tc_mean, 1.1*b_Tc_mean],
-        # [0.9*b_rho_mean, 1.1*b_rho_mean],
-        # [0.9*b_rho_b_mean, 1.1*b_rho_b_mean],
-        # [0.9*rho_T_mean, 1.1*rho_T_mean],
-        # [0.9*rho_Tc_mean, 1.1*rho_Tc_mean],
-        # [0.9*rho_B_mean, 1.1*rho_B_mean],
-        # [0.9*rho_F_mean, 1.1*rho_F_mean],
-        # [0.9*estable_T_h_mean, 1.1*estable_T_h_mean],
-        # [0.9*estable_B_mean, 1.1*estable_B_mean],
-        # [0.9*estable_T_c_mean, 1.1*estable_T_c_mean]
-    ]
-}
-
-problem_teste = {
-    'num_vars': 3,
-    'names': [
-        'a',
-        'b',
-        'c'
-    ],
-    'bounds': [
-        [-1,1],
-        [-1,1],
-        [-1,1]
-    ]
-}
-
-# print("Running Model")
-# sample = saltelli.sample(problem, 100, calc_second_order=False)
-# Y = np.empty([sample.shape[0]])
-
-# inputFile = open("sample.txt", "w")
-# for samp in sample:
-#     inputFile.write(str(samp) + "\n")
-# inputFile.close()
-
-# # evaluate the model for eah point in the input sample
-# for i in range(len(Y)):
-#     x = sample[i]
-#     Y[i] = teste(x[0], x[1], x[2])
-
-output_file = np.zeros(640)
-i = 0
-with open("returns.txt", "r") as f:
-    # output_file = f.readlines()
-    for y in f.read().split("\n"):
-        print(y)
-        if i == 640:
-            break
-        if type(y) == str:
-            output_file[i] = float(y)
-        i = i + 1
-
-# print(output_file)
-
-# estimate the sensitivity indices using Sobol's method
-sensitivity = sobol.analyze(problem_teste, output_file, calc_second_order=False)
-
-# firstorder indices
-print("First-order or main effect indices")
-print(sensitivity['S1'])
-# interpretation: x1 contributes to half of the 
-# total output uncertainty
-
-# higher-order indices
-print("Higher-order or total (interactions) indices")
-print(sensitivity['ST'])
-
-print("Done!")
