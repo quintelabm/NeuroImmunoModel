@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import sys
 from linfonodo import diferential
 
 gradiente = lambda ponto_posterior, ponto_anterior, valor_maximo: quimiotaxia(ponto_posterior, valor_maximo) - quimiotaxia(ponto_anterior, valor_maximo)
@@ -7,7 +8,8 @@ quimiotaxia = lambda ponto_atual, valor_maximo: ponto_atual/(valor_maximo + pont
 f_func = lambda populacao, valor_maximo: populacao*populacao/(valor_maximo + populacao)
 
 T_final = 28# Dia
-h_t = 0.0002
+h_t = float(sys.argv[1])
+print(h_t)
 
 L = 20  # Comprimento da malha
 h_x = 0.2
@@ -17,7 +19,7 @@ x = np.linspace(0, L, int(L/h_x))
 tam = len(x)
 steps = len(t)
 
-num_figuras = T_final
+num_figuras = 1
 intervalo_figs = int(steps/num_figuras)
 
 def verifica_cfl(difusao_mic, difusao_dc, difusao_da, quimiotaxia_dc, quimiotaxia_mic):
@@ -497,3 +499,5 @@ def modelo():
     outputFile.write(str(h_t) + "," + str(qoi[-1]) + "\n")
     outputFile.close()
     return qoi[-1]
+
+modelo()
