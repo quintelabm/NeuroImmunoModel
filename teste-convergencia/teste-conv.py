@@ -1,3 +1,4 @@
+from enum import Flag
 import numpy as np
 import matplotlib.pyplot as plt
 import sys
@@ -7,12 +8,12 @@ gradiente = lambda ponto_posterior, ponto_anterior, valor_maximo: quimiotaxia(po
 quimiotaxia = lambda ponto_atual, valor_maximo: ponto_atual/(valor_maximo + ponto_atual)
 f_func = lambda populacao, valor_maximo: populacao*populacao/(valor_maximo + populacao)
 
-T_final = 28# Dia
+T_final = 0.5# Dia
 h_t = float(sys.argv[1])
 print(h_t)
 
 L = 20  # Comprimento da malha
-h_x = 0.2
+h_x = 0.5
 
 t = np.linspace(0, T_final, int(T_final/h_t))
 x = np.linspace(0, L, int(L/h_x))
@@ -496,7 +497,7 @@ def modelo():
         FL_vetor[k] = FL_atual
     print("Terminei de rodar uma vez!")
     outputFile = open("returnsConv.txt", "a")
-    outputFile.write(str(h_t) + "," + str(qoi[-1]) + "\n")
+    outputFile.write(str(h_t) + "," + str(qoi[-1]) + "," + str(FL_atual) + "\n")
     outputFile.close()
     return qoi[-1]
 
