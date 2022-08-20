@@ -1,3 +1,4 @@
+from tkinter import FLAT
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
@@ -136,9 +137,9 @@ dendritica_conv_atual = np.zeros((int(L/h_x), int(L/h_x)))
 dendritica_ativ_atual = np.zeros((int(L/h_x), int(L/h_x)))
 
 # Modelo linfonodo
-estable_B = 8.4*10**-4
-estable_T_c = 8.4*10**-3
-estable_T_h = 8.4*10**-3
+estable_B = 8.4*10**1
+estable_T_c = 8.4*10**1
+estable_T_h = 8.4*10**1
 linfonodo_eqs = np.zeros(5)
 linfonodo_eqs[0]= 0    # Dendritic cells
 linfonodo_eqs[1]= estable_T_c/2  # Cytotoxic T cells
@@ -209,9 +210,9 @@ parameters = {
     "r_t": 0.1 , # agressividade de t citotoxica(procurar na literatura)
 
     "mu_dc": 60*24*3*10**-4, #Taxa de producao de células dendríticas (procurar na literatura)
-    "gamma_D": 0.01, #Taxa de migração de DC ativadas para o linfonodo (procurar na literatura)
-    "gamma_F": 0.03, #Taxa de migração de anticorpos para o tecido (procurar na literatura)
-    "gamma_T": 0.2, #Taxa de migração de T citotoxica para o tecido (procurar na literatura)
+    "gamma_D": 1,#0.01, #Taxa de migração de DC ativadas para o linfonodo (procurar na literatura)
+    "gamma_F": 3,#0.03, #Taxa de migração de anticorpos para o tecido (procurar na literatura)
+    "gamma_T": 20,#0.2, #Taxa de migração de T citotoxica para o tecido (procurar na literatura)
 
     "t_cito_media": 37,
     "dc_media": dc_media,
@@ -223,7 +224,7 @@ parameters = {
     "alpha_T_c": 0.5,
     "alpha_B": 1,
     "b_T": 0.017,
-    "b_Tc": 0.005,
+    "b_Tc": 0.017,
     "b_rho": 10**5,
     "b_rho_b": 6.02*10**3,
     "rho_T": 2,
@@ -279,6 +280,16 @@ for k in range(1,steps):
     TL_h_atual = linfonodo_eqs[2] + h_t*dy[2]
     B_atual = linfonodo_eqs[3] + h_t*dy[3]
     FL_atual = linfonodo_eqs[4] + h_t*dy[4]
+    if DL_atual < 0:
+        print("Tempo do Erro: " + str(k*h_t) + " - DC LN: " + str(DL_atual))
+    if TL_c_atual < 0:
+        print("Tempo do Erro: " + str(k*h_t) + " - TC LN: " + str(TL_c_atual))
+    if TL_h_atual < 0:
+        print("Tempo do Erro: " + str(k*h_t) + " - TH LN: " + str(TL_h_atual))
+    if B_atual < 0:
+        print("Tempo do Erro: " + str(k*h_t) + " - B LN: " + str(B_atual))
+    if FL_atual < 0:
+        print("Tempo do Erro: " + str(k*h_t) + " - IGG LN: " + str(FL_atual))
     
     for i in range(tam):
         for j in range(tam):
