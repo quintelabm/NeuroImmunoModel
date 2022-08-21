@@ -1,9 +1,9 @@
-from tkinter import FLAT
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 import time
 import os
+from scipy.integrate import odeint
 from linfonodo import diferential
 
 sns.set()
@@ -50,14 +50,16 @@ V_LV = 0
 theta_LV = np.zeros((int(L/h_x), int(L/h_x)))
 for i in range(int(L/h_x)):
     for j in range(int(L/h_x)):
-        if (i == L/h_x - 1 and j == L/(h_x*2)) or (i == 0 and j == L/(h_x*2)) or (i == L/(h_x*2) and j == 0) or (i == L/(h_x*2) and j == L/h_x - 1) or (i == int(L/h_x)/2 and j == int(L/h_x)/2):
+        # if (i == L/h_x - 1 and j == L/(h_x*2)) or (i == 0 and j == L/(h_x*2)) or (i == L/(h_x*2) and j == 0) or (i == L/(h_x*2) and j == L/h_x - 1) or (i == int(L/h_x)/2 and j == int(L/h_x)/2):
+        if (i == 0) or (i == int(L/h_x)/2 and j == int(L/h_x)/2):
             theta_LV[i][j] = 1
             V_LV += 1
 
 theta_BV = np.zeros((int(L/h_x), int(L/h_x)))
 for i in range(int(L/h_x)):
     for j in range(int(L/h_x)):
-        if (i == L/h_x - 1 and j == L/h_x - 1) or (i == 0 and j == L/h_x - 1) or (i == L/h_x - 1 and j == 0) or (i == 0 and j == 0):
+        # if (i == L/h_x - 1 and j == L/h_x - 1) or (i == 0 and j == L/h_x - 1) or (i == L/h_x - 1 and j == 0) or (i == 0 and j == 0):
+        if i == int(L/h_x) -1:
             theta_BV[i][j] = 1
             V_BV += 1
 V_BV = V_BV*100
@@ -83,7 +85,7 @@ def checkBVeLV():
     plt.show()
     plt.clf()
 
-# checkBVeLV()
+checkBVeLV()
 
 def calculaQuimiotaxia(ponto_posterior_j, ponto_anterior_j, ponto_posterior_i, ponto_anterior_i, ponto_atual, valor_medio, gradiente_odc_i, gradiente_odc_j):
     gradiente_pop_i = 0
@@ -204,7 +206,7 @@ parameters = {
     "d_da": d_mic, # difusao DC ativada(procurar na literatura)
     "d_t_cit": d_mic, # difusao t citotóxica(procurar na literatura)
     "d_anti": 10*d_mic, # difusao anticorpo(procurar na literatura)
-    "lamb_f_m": 60*24*3.96*10**-6, # taxa de anticorpos consumidos durante o processo de opsonização pela micróglia
+    "lamb_f_m": 5.702*10**-1,#5.702*10**-6 # taxa de anticorpos consumidos durante o processo de opsonização pela micróglia
     "b_d": 0.001, # taxa de ativacao de dc por odc destruidos(procurar na literatura)
     "r_dc": 0.001, # taxa de coleta de odc destruidos pelas DCs (procurar na literatura)
     "r_t": 0.1 , # agressividade de t citotoxica(procurar na literatura)
@@ -274,12 +276,13 @@ printMesh(0,anticorpo_anterior, "anticorpo")
 tic = time.perf_counter()
 
 for k in range(1,steps):
-    dy = diferential(linfonodo_eqs, parameters)
-    DL_atual = linfonodo_eqs[0] + h_t*dy[0]
-    TL_c_atual = linfonodo_eqs[1] + h_t*dy[1]
-    TL_h_atual = linfonodo_eqs[2] + h_t*dy[2]
-    B_atual = linfonodo_eqs[3] + h_t*dy[3]
-    FL_atual = linfonodo_eqs[4] + h_t*dy[4]
+    results = odeint(diferential, linfonodo_eqs, [0,h_t], args=(parameters,))
+    # dy = diferential(linfonodo_eqs, 0, parameters)
+    DL_atual = results[1][0]
+    TL_c_atual = results[1][1]
+    TL_h_atual = results[1][2]
+    B_atual = results[1][3]
+    FL_atual = results[1][4]
     if DL_atual < 0:
         print("Tempo do Erro: " + str(k*h_t) + " - DC LN: " + str(DL_atual))
     if TL_c_atual < 0:
