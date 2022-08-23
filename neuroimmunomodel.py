@@ -285,22 +285,39 @@ for k in range(1,steps):
     #variaveis pra verificar se as migracoes de um ht pro outro estao funcionando
     DL_atualDerivada = 0
     TL_c_atualDerivada = 0
+    TL_h_atualDerivada = 0
+    B_atualDerivada = 0
     FL_atualDerivada = 0
+    
     D_Derivada = 0
     Tc_Derivada = 0
     F_Derivada = 0
+    Odc_Derivada = 0
+    mic_Derivada = 0
+    
     D_sum_ant = 0
     T_c_sum_ant = 0
     F_sum_ant = 0
+    odc_sum_ant = 0
+    mic_sum_ant = 0
+    
     D_sum_atual = 0
     T_c_sum_atual = 0
     F_sum_atual = 0
+    odc_sum_atual = 0
+    mic_sum_atual = 0
     with open("verifyMigration.txt", "r") as f:
         for line in f:
             row = line.split(",")
             DL_atualDerivada = float(row[0]) * h_t
             TL_c_atualDerivada = float(row[1]) * h_t
+            TL_h_atualDerivada = float(row[2]) * h_t
+            B_atualDerivada = float(row[3]) * h_t
             FL_atualDerivada = float(row[4]) * h_t
+
+    print("T helper: " + str(TL_h_atual - results[0][2] - TL_c_atualDerivada))
+    print("B: " + str(B_atual - results[0][3] - B_atualDerivada))
+
     if DL_atual < 0:
         print("Tempo do Erro: " + str(k*h_t) + " - DC LN: " + str(DL_atual))
     if TL_c_atual < 0:
@@ -324,6 +341,8 @@ for k in range(1,steps):
             D_sum_ant += da
             T_c_sum_ant += t_cito
             F_sum_ant += anticorpo
+            odc_sum_ant += oligo_destr
+            mic_sum_ant += microglia
             # condição de contorno de Neumman microglia
             mic_iposterior = mic_anterior[i+1][j] if i != tam-1 else microglia - 2*h_x*bc_neumann_baixo
             mic_ianterior = mic_anterior[i-1][j] if i != 0 else microglia - 2*h_x*bc_neumann_cima
@@ -411,10 +430,14 @@ for k in range(1,steps):
             Tc_Derivada += h_t*(difusao_t_cito - quimiotaxia_t_cito + migracao_t_cito)
             D_Derivada += h_t*(difusao_da + ativacao_dc_da + migracao_da)
             F_Derivada += h_t*(difusao_anticorpo - reacao_anticorpo + migracao_anticorpo)
-            
+            Odc_Derivada += h_t*(parameters["r_m"]*f_func(microglia, mic_media)*(parameters["odc_media"] - oligo_destr) + fag_mic_ant + apoptose_tke)
+            mic_Derivada += h_t*(difusao_mic + reacao_mic - quimiotaxia_mic)
+
             D_sum_atual += dendritica_ativ_atual[i][j]
             T_c_sum_atual += t_cito_atual[i][j]
             F_sum_atual += anticorpo_atual[i][j]
+            odc_sum_atual += olide_atual[i][j]
+            mic_sum_atual += mic_atual[i][j]
 
             if microglia < 0:
                 print("Tempo do Erro: " + str(k*h_t) + " - Variavel microglia: " + str(microglia))
@@ -429,10 +452,11 @@ for k in range(1,steps):
             if oligo_destr < 0:
                 print("Tempo do Erro: " + str(k*h_t) + " - Variavel oligo_destr: " + str(oligo_destr))
 
-    print(results[1][0] + D_sum_atual - results[0][0] - D_sum_ant - DL_atualDerivada - D_Derivada)
-    print(results[1][1] + T_c_sum_atual - results[0][1] - T_c_sum_ant - TL_c_atualDerivada - Tc_Derivada)
-    print(results[1][4] + F_sum_atual - results[0][4] - F_sum_ant - FL_atualDerivada - F_Derivada)
-    vvvv = input()
+    print("Dendriticas: " + str(results[1][0] + D_sum_atual - results[0][0] - D_sum_ant - DL_atualDerivada - D_Derivada))
+    print("T citotoxicas: " + str(results[1][1] + T_c_sum_atual - results[0][1] - T_c_sum_ant - TL_c_atualDerivada - Tc_Derivada))
+    print("Anticorpos: " + str(results[1][4] + F_sum_atual - results[0][4] - F_sum_ant - FL_atualDerivada - F_Derivada))
+    print("Odcs: " + str(odc_sum_atual - odc_sum_ant - Odc_Derivada))
+    print("Microglia: " + str(mic_sum_atual - mic_sum_ant - mic_Derivada))
     olide_anterior = np.copy(olide_atual)
     dendritica_conv_anterior = np.copy(dendritica_conv_atual)
     dendritica_ativ_anterior = np.copy(dendritica_ativ_atual)
