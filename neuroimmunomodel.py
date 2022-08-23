@@ -27,7 +27,7 @@ T_final = 28# Dia
 h_t = 0.0002
 
 L = 20  # Comprimento da malha
-h_x = 0.2
+h_x = 0.5
 
 t = np.linspace(0, T_final, int(T_final/h_t))
 x = np.linspace(0, L, int(L/h_x))
@@ -62,8 +62,8 @@ for i in range(int(L/h_x)):
         if j == int(L/h_x) -1:
             theta_BV[i][j] = 1
             V_BV += 1
-V_BV = V_BV*100
-V_LV = V_LV*100
+V_BV = V_BV
+V_LV = V_LV
 V_LN = 160
 
 def checkBVeLV():
@@ -277,12 +277,30 @@ tic = time.perf_counter()
 
 for k in range(1,steps):
     results = odeint(diferential, linfonodo_eqs, [0,h_t], args=(parameters,))
-    # dy = diferential(linfonodo_eqs, 0, parameters)
     DL_atual = results[1][0]
     TL_c_atual = results[1][1]
     TL_h_atual = results[1][2]
     B_atual = results[1][3]
     FL_atual = results[1][4]
+    #variaveis pra verificar se as migracoes de um ht pro outro estao funcionando
+    DL_atualDerivada = 0
+    TL_c_atualDerivada = 0
+    FL_atualDerivada = 0
+    D_Derivada = 0
+    Tc_Derivada = 0
+    F_Derivada = 0
+    D_sum_ant = 0
+    T_c_sum_ant = 0
+    F_sum_ant = 0
+    D_sum_atual = 0
+    T_c_sum_atual = 0
+    F_sum_atual = 0
+    with open("verifyMigration.txt", "r") as f:
+        for line in f:
+            row = line.split(",")
+            DL_atualDerivada = float(row[0]) * h_t
+            TL_c_atualDerivada = float(row[1]) * h_t
+            FL_atualDerivada = float(row[4]) * h_t
     if DL_atual < 0:
         print("Tempo do Erro: " + str(k*h_t) + " - DC LN: " + str(DL_atual))
     if TL_c_atual < 0:
@@ -302,7 +320,10 @@ for k in range(1,steps):
             da = dendritica_ativ_anterior[i][j]
             anticorpo = anticorpo_anterior[i][j]
             t_cito = t_cito_anterior[i][j]
-            
+
+            D_sum_ant += da
+            T_c_sum_ant += t_cito
+            F_sum_ant += anticorpo
             # condição de contorno de Neumman microglia
             mic_iposterior = mic_anterior[i+1][j] if i != tam-1 else microglia - 2*h_x*bc_neumann_baixo
             mic_ianterior = mic_anterior[i-1][j] if i != 0 else microglia - 2*h_x*bc_neumann_cima
@@ -386,6 +407,15 @@ for k in range(1,steps):
             migracao_da = theta_LV[i][j]*parameters["gamma_D"]*(DL_atual - da)
 
             dendritica_ativ_atual[i][j] = da + h_t*(difusao_da + ativacao_dc_da + migracao_da)
+
+            Tc_Derivada += h_t*(difusao_t_cito - quimiotaxia_t_cito + migracao_t_cito)
+            D_Derivada += h_t*(difusao_da + ativacao_dc_da + migracao_da)
+            F_Derivada += h_t*(difusao_anticorpo - reacao_anticorpo + migracao_anticorpo)
+            
+            D_sum_atual += dendritica_ativ_atual[i][j]
+            T_c_sum_atual += t_cito_atual[i][j]
+            F_sum_atual += anticorpo_atual[i][j]
+
             if microglia < 0:
                 print("Tempo do Erro: " + str(k*h_t) + " - Variavel microglia: " + str(microglia))
             if da < 0:
@@ -398,7 +428,11 @@ for k in range(1,steps):
                 print("Tempo do Erro: " + str(k*h_t) + " - Variavel anticorpo: " + str(anticorpo))
             if oligo_destr < 0:
                 print("Tempo do Erro: " + str(k*h_t) + " - Variavel oligo_destr: " + str(oligo_destr))
-            
+
+    print(results[1][0] + D_sum_atual - results[0][0] - D_sum_ant - DL_atualDerivada - D_Derivada)
+    print(results[1][1] + T_c_sum_atual - results[0][1] - T_c_sum_ant - TL_c_atualDerivada - Tc_Derivada)
+    print(results[1][4] + F_sum_atual - results[0][4] - F_sum_ant - FL_atualDerivada - F_Derivada)
+    vvvv = input()
     olide_anterior = np.copy(olide_atual)
     dendritica_conv_anterior = np.copy(dendritica_conv_atual)
     dendritica_ativ_anterior = np.copy(dendritica_ativ_atual)

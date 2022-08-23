@@ -37,5 +37,7 @@ def diferential(y, t, parameters):
     producaoF = parameters["rho_F"] * B
     migracaoF = ((parameters["gamma_F"] * (Igg - parameters["AnticorposTecido"])) * (parameters["V_BV"] / parameters["V_LN"]))
     dy[4] = producaoF - migracaoF
-
+    outputFile = open("verifyMigration.txt", "w")
+    outputFile.write(str(dy[0]) + "," + str(dy[1]) + "," + str(dy[2]) + "," + str(dy[3]) + "," + str(dy[4]) + "\n")
+    outputFile.close()
     return dy
