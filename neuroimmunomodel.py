@@ -27,7 +27,7 @@ T_final = 28# Dia
 h_t = 0.0002
 
 L = 20  # Comprimento da malha
-h_x = 0.5
+h_x = 0.2
 
 t = np.linspace(0, T_final, int(T_final/h_t))
 x = np.linspace(0, L, int(L/h_x))
