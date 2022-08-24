@@ -194,10 +194,10 @@ def printMesh(time, population, type):
     plt.savefig('results/'+type+'/fig'+'{:.4f}'.format(time*h_t)+'.png', dpi = 300)
     plt.clf()
 
-d_mic = (60*24*6.6/(2.5**2))*10**-5
+d_mic = 60*24*6.6*10**-5
 
 parameters = {
-    "chi": 0.298*60*2, # Quimioatracao. valor por Dia
+    "chi": 0.298*60*24, # Quimioatracao. valor por Dia
     "D_mic": d_mic, # Difusao da microglia. valor por Dia
     "mu_m": 60*24*3*10**-6, # Taxa de ativação da microglia. valor por Dia
     "r_m": 60*24*3.96*10**-6, # intensidade dos danos causados pela microglia valor por Dia
@@ -227,11 +227,11 @@ parameters = {
     "alpha_B": 1,
     "b_T": 0.017,
     "b_Tc": 0.017,
-    "b_rho": 10**5,
-    "b_rho_b": 6.02*10**3,
+    "b_rho": 10,#**5,
+    "b_rho_b": 6.02,#*10**3,
     "rho_T": 2,
     "rho_Tc": 2,
-    "rho_B": 16,
+    "rho_B": 8,#16,
     "rho_F": 5.1*10**2,
     "estable_T_h": estable_T_h,
     "estable_B": estable_B,
