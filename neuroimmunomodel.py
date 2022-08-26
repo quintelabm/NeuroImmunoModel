@@ -227,11 +227,11 @@ parameters = {
     "alpha_B": 1,
     "b_T": 0.017,
     "b_Tc": 0.017,
-    "b_rho": 10,#**5,
-    "b_rho_b": 6.02,#*10**3,
+    "b_rho": 10**2,#**5,
+    "b_rho_b": 6.02*10,#*10**3,
     "rho_T": 2,
     "rho_Tc": 2,
-    "rho_B": 8,#16,
+    "rho_B": 11,#16,
     "rho_F": 5.1*10**2,
     "estable_T_h": estable_T_h,
     "estable_B": estable_B,
@@ -314,20 +314,25 @@ for k in range(1,steps):
             TL_h_atualDerivada = float(row[2]) * h_t
             B_atualDerivada = float(row[3]) * h_t
             FL_atualDerivada = float(row[4]) * h_t
-
-    print("T helper: " + str(TL_h_atual - results[0][2] - TL_c_atualDerivada))
-    print("B: " + str(B_atual - results[0][3] - B_atualDerivada))
+    if k == steps - 1:
+        print("T helper: " + str(TL_h_atual - results[0][2] - TL_c_atualDerivada))
+        print("B: " + str(B_atual - results[0][3] - B_atualDerivada))
 
     if DL_atual < 0:
         print("Tempo do Erro: " + str(k*h_t) + " - DC LN: " + str(DL_atual))
+        exit(1)
     if TL_c_atual < 0:
         print("Tempo do Erro: " + str(k*h_t) + " - TC LN: " + str(TL_c_atual))
+        exit(1)
     if TL_h_atual < 0:
         print("Tempo do Erro: " + str(k*h_t) + " - TH LN: " + str(TL_h_atual))
+        exit(1)
     if B_atual < 0:
         print("Tempo do Erro: " + str(k*h_t) + " - B LN: " + str(B_atual))
+        exit(1)
     if FL_atual < 0:
         print("Tempo do Erro: " + str(k*h_t) + " - IGG LN: " + str(FL_atual))
+        exit(1)
     
     for i in range(tam):
         for j in range(tam):
@@ -441,22 +446,28 @@ for k in range(1,steps):
 
             if microglia < 0:
                 print("Tempo do Erro: " + str(k*h_t) + " - Variavel microglia: " + str(microglia))
+                exit(1)
             if da < 0:
                 print("Tempo do Erro: " + str(k*h_t) + " - Variavel DA: " + str(da))
+                exit(1)
             if dc < 0:
                 print("Tempo do Erro: " + str(k*h_t) + " - Variavel dc: " + str(dc))
+                exit(1)
             if t_cito < 0:
                 print("Tempo do Erro: " + str(k*h_t) + " - Variavel t_cito: " + str(t_cito))
+                exit(1)
             if anticorpo < 0:
                 print("Tempo do Erro: " + str(k*h_t) + " - Variavel anticorpo: " + str(anticorpo))
+                exit(1)
             if oligo_destr < 0:
                 print("Tempo do Erro: " + str(k*h_t) + " - Variavel oligo_destr: " + str(oligo_destr))
-
-    print("Dendriticas: " + str(results[1][0] + D_sum_atual - results[0][0] - D_sum_ant - DL_atualDerivada - D_Derivada))
-    print("T citotoxicas: " + str(results[1][1] + T_c_sum_atual - results[0][1] - T_c_sum_ant - TL_c_atualDerivada - Tc_Derivada))
-    print("Anticorpos: " + str(results[1][4] + F_sum_atual - results[0][4] - F_sum_ant - FL_atualDerivada - F_Derivada))
-    print("Odcs: " + str(odc_sum_atual - odc_sum_ant - Odc_Derivada))
-    print("Microglia: " + str(mic_sum_atual - mic_sum_ant - mic_Derivada))
+                exit(1)
+    if k == steps - 1:
+        print("Dendriticas: " + str(results[1][0] + D_sum_atual - results[0][0] - D_sum_ant - DL_atualDerivada - D_Derivada))
+        print("T citotoxicas: " + str(results[1][1] + T_c_sum_atual - results[0][1] - T_c_sum_ant - TL_c_atualDerivada - Tc_Derivada))
+        print("Anticorpos: " + str(results[1][4] + F_sum_atual - results[0][4] - F_sum_ant - FL_atualDerivada - F_Derivada))
+        print("Odcs: " + str(odc_sum_atual - odc_sum_ant - Odc_Derivada))
+        print("Microglia: " + str(mic_sum_atual - mic_sum_ant - mic_Derivada))
     olide_anterior = np.copy(olide_atual)
     dendritica_conv_anterior = np.copy(dendritica_conv_atual)
     dendritica_ativ_anterior = np.copy(dendritica_ativ_atual)
