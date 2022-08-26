@@ -197,7 +197,7 @@ def printMesh(time, population, type):
 d_mic = 60*24*6.6*10**-5
 
 parameters = {
-    "chi": 0.298*60*24, # Quimioatracao. valor por Dia
+    "chi": 0.298*60*2, # Quimioatracao. valor por Dia
     "D_mic": d_mic, # Difusao da microglia. valor por Dia
     "mu_m": 60*24*3*10**-6, # Taxa de ativação da microglia. valor por Dia
     "r_m": 60*24*3.96*10**-6, # intensidade dos danos causados pela microglia valor por Dia
