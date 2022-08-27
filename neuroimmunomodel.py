@@ -62,8 +62,8 @@ for i in range(int(L/h_x)):
         if j == int(L/h_x) -1:
             theta_BV[i][j] = 1
             V_BV += 1
-V_BV = V_BV*100
-V_LV = V_LV*100
+
+
 V_LN = 160
 
 def checkBVeLV():
@@ -194,7 +194,7 @@ def printMesh(time, population, type):
     plt.savefig('results/'+type+'/fig'+'{:.4f}'.format(time*h_t)+'.png', dpi = 300)
     plt.clf()
 
-d_mic = 60*24*6.6*10**-5
+d_mic = 60*(24/2.5**2)*6.6*10**-5
 
 parameters = {
     "chi": 0.298*60*2, # Quimioatracao. valor por Dia
@@ -212,9 +212,9 @@ parameters = {
     "r_t": 0.1 , # agressividade de t citotoxica(procurar na literatura)
 
     "mu_dc": 60*24*3*10**-4, #Taxa de producao de células dendríticas (procurar na literatura)
-    "gamma_D": 1,#0.01, #Taxa de migração de DC ativadas para o linfonodo (procurar na literatura)
-    "gamma_F": 3,#0.03, #Taxa de migração de anticorpos para o tecido (procurar na literatura)
-    "gamma_T": 2,#0.2, #Taxa de migração de T citotoxica para o tecido (procurar na literatura)
+    "gamma_D": 0.01, #Taxa de migração de DC ativadas para o linfonodo (procurar na literatura)
+    "gamma_F": 0.03, #Taxa de migração de anticorpos para o tecido (procurar na literatura)
+    "gamma_T": 0.02, #Taxa de migração de T citotoxica para o tecido (procurar na literatura)
 
     "t_cito_media": 37,
     "dc_media": dc_media,
@@ -232,7 +232,7 @@ parameters = {
     "rho_T": 2,
     "rho_Tc": 2,
     "rho_B": 11,#16,
-    "rho_F": 5.1,#*10**2,
+    "rho_F": 5.1*10**-2,
     "estable_T_h": estable_T_h,
     "estable_B": estable_B,
     "estable_T_c": estable_T_c,
