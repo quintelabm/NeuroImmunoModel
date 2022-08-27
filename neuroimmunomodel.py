@@ -62,8 +62,8 @@ for i in range(int(L/h_x)):
         if j == int(L/h_x) -1:
             theta_BV[i][j] = 1
             V_BV += 1
-V_BV = V_BV
-V_LV = V_LV
+V_BV = V_BV*100
+V_LV = V_LV*100
 V_LN = 160
 
 def checkBVeLV():
