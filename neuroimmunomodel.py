@@ -206,7 +206,7 @@ parameters = {
     "d_da": d_mic, # difusao DC ativada(procurar na literatura)
     "d_t_cit": d_mic, # difusao t citotóxica(procurar na literatura)
     "d_anti": 10*d_mic, # difusao anticorpo(procurar na literatura)
-    "lamb_f_m": 5.702*10**-2,#5.702*10**-6 # taxa de anticorpos consumidos durante o processo de opsonização pela micróglia
+    "lamb_f_m": 5.702*10**-3,#5.702*10**-6 # taxa de anticorpos consumidos durante o processo de opsonização pela micróglia
     "b_d": 0.001, # taxa de ativacao de dc por odc destruidos(procurar na literatura)
     "r_dc": 0.001, # taxa de coleta de odc destruidos pelas DCs (procurar na literatura)
     "r_t": 0.1 , # agressividade de t citotoxica(procurar na literatura)
@@ -222,17 +222,17 @@ parameters = {
     "odc_media": 400,
 
 
-    "alpha_T_h": 0.5,#0.01,
+    "alpha_T_h": 1.5,#0.01,
     "alpha_T_c": 0.5,
     "alpha_B": 0.1,
     "b_T": 0.17,#0.017,
     "b_Tc": 0.17,#0.017,
-    "b_rho": 10**3,#10**5,
+    "b_rho": 10**2,#10**5,
     "b_rho_b": 6.02*10,#*10**3,
     "rho_T": 2,
     "rho_Tc": 2,
     "rho_B": 11,#16,
-    "rho_F": 5.1*10**-2,
+    "rho_F": 10**-2,#5.1*10**-2,
     "estable_T_h": estable_T_h,
     "estable_B": estable_B,
     "estable_T_c": estable_T_c,
