@@ -3,6 +3,7 @@ import numpy as np
 import seaborn as sns
 import time
 import os
+from scipy.integrate import odeint
 from linfonodo import diferential
 
 sns.set()
@@ -22,18 +23,18 @@ gradiente = lambda ponto_posterior, ponto_anterior, valor_maximo: quimiotaxia(po
 quimiotaxia = lambda ponto_atual, valor_maximo: ponto_atual/(valor_maximo + ponto_atual)
 f_func = lambda populacao, valor_maximo: populacao*populacao/(valor_maximo + populacao)
 
-T_final = 1# Dia
+T_final = 28# Dia
 h_t = 0.0002
 
 L = 20  # Comprimento da malha
-h_x = 0.2
+h_x = 0.5
 
 t = np.linspace(0, T_final, int(T_final/h_t))
 x = np.linspace(0, L, int(L/h_x))
 tam = len(x)
 steps = len(t)
 
-num_figuras = 10#T_final
+num_figuras = T_final
 intervalo_figs = int(steps/num_figuras)
 
 def verifica_cfl(difusao_mic, difusao_dc, difusao_da, quimiotaxia_dc, quimiotaxia_mic):
@@ -49,16 +50,19 @@ V_LV = 0
 theta_LV = np.zeros((int(L/h_x), int(L/h_x)))
 for i in range(int(L/h_x)):
     for j in range(int(L/h_x)):
-        if (i == L/h_x - 1 and j == L/(h_x*2)) or (i == 0 and j == L/(h_x*2)) or (i == L/(h_x*2) and j == 0) or (i == L/(h_x*2) and j == L/h_x - 1) or (i == int(L/h_x)/2 and j == int(L/h_x)/2):
+        # if (i == L/h_x - 1 and j == L/(h_x*2)) or (i == 0 and j == L/(h_x*2)) or (i == L/(h_x*2) and j == 0) or (i == L/(h_x*2) and j == L/h_x - 1) or (i == int(L/h_x)/2 and j == int(L/h_x)/2):
+        if (j == 0) or (i == int(L/h_x)/2 and j == int(L/h_x)/2):
             theta_LV[i][j] = 1
             V_LV += 1
 
 theta_BV = np.zeros((int(L/h_x), int(L/h_x)))
 for i in range(int(L/h_x)):
     for j in range(int(L/h_x)):
-        if (i == L/h_x - 1 and j == L/h_x - 1) or (i == 0 and j == L/h_x - 1) or (i == L/h_x - 1 and j == 0) or (i == 0 and j == 0):
+        # if (i == L/h_x - 1 and j == L/h_x - 1) or (i == 0 and j == L/h_x - 1) or (i == L/h_x - 1 and j == 0) or (i == 0 and j == 0):
+        if j == int(L/h_x) -1:
             theta_BV[i][j] = 1
             V_BV += 1
+
 
 V_LN = 160
 
@@ -135,14 +139,14 @@ dendritica_conv_atual = np.zeros((int(L/h_x), int(L/h_x)))
 dendritica_ativ_atual = np.zeros((int(L/h_x), int(L/h_x)))
 
 # Modelo linfonodo
-estable_B = 8.4*10**-4
-estable_T_c = 8.4*10**-3
-estable_T_h = 8.4*10**-3
+estable_B = 8.4*10**1
+estable_T_c = 8.4*10**1
+estable_T_h = 8.4*10**1
 linfonodo_eqs = np.zeros(5)
 linfonodo_eqs[0]= 0    # Dendritic cells
-linfonodo_eqs[1]= 0.2  # Cytotoxic T cells
-linfonodo_eqs[2]= 0.4  # Helper T cells
-linfonodo_eqs[3]= estable_B    # B cells
+linfonodo_eqs[1]= estable_T_c/2  # Cytotoxic T cells
+linfonodo_eqs[2]= estable_T_h/2  # Helper T cells
+linfonodo_eqs[3]= estable_B/2    # B cells
 linfonodo_eqs[4]= 0    # Antibodies
 
 #Valores das populaçoes que migram que estão em contato com os vasos sanguineos ou linfaticos
@@ -160,7 +164,6 @@ for i in range(int(L/h_x)):
 DendriticasTecido = DendriticasTecido/V_LV
 AnticorposTecido = AnticorposTecido/V_BV
 TcitotoxicaTecido = TcitotoxicaTecido/V_BV
-
 #**********************Funcao print dos resultados*************************
 
 populationTitle = {
@@ -191,7 +194,7 @@ def printMesh(time, population, type):
     plt.savefig('results/'+type+'/fig'+'{:.4f}'.format(time*h_t)+'.png', dpi = 300)
     plt.clf()
 
-d_mic = (60*24*6.6/(2.5**2))*10**-5
+d_mic = 60*24*6.6*10**-5
 
 parameters = {
     "chi": 0.298*60*2, # Quimioatracao. valor por Dia
@@ -203,7 +206,7 @@ parameters = {
     "d_da": d_mic, # difusao DC ativada(procurar na literatura)
     "d_t_cit": d_mic, # difusao t citotóxica(procurar na literatura)
     "d_anti": 10*d_mic, # difusao anticorpo(procurar na literatura)
-    "lamb_f_m": 60*24*3.96*10**-6, # taxa de anticorpos consumidos durante o processo de opsonização pela micróglia
+    "lamb_f_m": 5.702*10**-3,#5.702*10**-6 # taxa de anticorpos consumidos durante o processo de opsonização pela micróglia
     "b_d": 0.001, # taxa de ativacao de dc por odc destruidos(procurar na literatura)
     "r_dc": 0.001, # taxa de coleta de odc destruidos pelas DCs (procurar na literatura)
     "r_t": 0.1 , # agressividade de t citotoxica(procurar na literatura)
@@ -211,7 +214,7 @@ parameters = {
     "mu_dc": 60*24*3*10**-4, #Taxa de producao de células dendríticas (procurar na literatura)
     "gamma_D": 0.01, #Taxa de migração de DC ativadas para o linfonodo (procurar na literatura)
     "gamma_F": 0.03, #Taxa de migração de anticorpos para o tecido (procurar na literatura)
-    "gamma_T": 0.2, #Taxa de migração de T citotoxica para o tecido (procurar na literatura)
+    "gamma_T": 0.02, #Taxa de migração de T citotoxica para o tecido (procurar na literatura)
 
     "t_cito_media": 37,
     "dc_media": dc_media,
@@ -219,17 +222,17 @@ parameters = {
     "odc_media": 400,
 
 
-    "alpha_T_h": 0.01 ,
+    "alpha_T_h": 1.5,#0.01,
     "alpha_T_c": 0.5,
-    "alpha_B": 1,
-    "b_T": 0.017,
-    "b_Tc": 0.005,
-    "b_rho": 10**5,
-    "b_rho_b": 6.02*10**3,
+    "alpha_B": 0.1,
+    "b_T": 0.17,#0.017,
+    "b_Tc": 0.17,#0.017,
+    "b_rho": 10**2,#10**5,
+    "b_rho_b": 6.02*10,#*10**3,
     "rho_T": 2,
     "rho_Tc": 2,
-    "rho_B": 16,
-    "rho_F": 5.1*10**2,
+    "rho_B": 11,#16,
+    "rho_F": 10**-2,#5.1*10**-2,
     "estable_T_h": estable_T_h,
     "estable_B": estable_B,
     "estable_T_c": estable_T_c,
@@ -273,12 +276,63 @@ printMesh(0,anticorpo_anterior, "anticorpo")
 tic = time.perf_counter()
 
 for k in range(1,steps):
-    dy = diferential(linfonodo_eqs, parameters)
-    DL_atual = linfonodo_eqs[0] + h_t*dy[0]
-    TL_c_atual = linfonodo_eqs[1] + h_t*dy[1]
-    TL_h_atual = linfonodo_eqs[2] + h_t*dy[2]
-    B_atual = linfonodo_eqs[3] + h_t*dy[3]
-    FL_atual = linfonodo_eqs[4] + h_t*dy[4]
+    results = odeint(diferential, linfonodo_eqs, [0,h_t], args=(parameters,))
+    DL_atual = results[1][0]
+    TL_c_atual = results[1][1]
+    TL_h_atual = results[1][2]
+    B_atual = results[1][3]
+    FL_atual = results[1][4]
+    #variaveis pra verificar se as migracoes de um ht pro outro estao funcionando
+    DL_atualDerivada = 0
+    TL_c_atualDerivada = 0
+    TL_h_atualDerivada = 0
+    B_atualDerivada = 0
+    FL_atualDerivada = 0
+    
+    D_Derivada = 0
+    Tc_Derivada = 0
+    F_Derivada = 0
+    Odc_Derivada = 0
+    mic_Derivada = 0
+    
+    D_sum_ant = 0
+    T_c_sum_ant = 0
+    F_sum_ant = 0
+    odc_sum_ant = 0
+    mic_sum_ant = 0
+    
+    D_sum_atual = 0
+    T_c_sum_atual = 0
+    F_sum_atual = 0
+    odc_sum_atual = 0
+    mic_sum_atual = 0
+    with open("verifyMigration.txt", "r") as f:
+        for line in f:
+            row = line.split(",")
+            DL_atualDerivada = float(row[0]) * h_t
+            TL_c_atualDerivada = float(row[1]) * h_t
+            TL_h_atualDerivada = float(row[2]) * h_t
+            B_atualDerivada = float(row[3]) * h_t
+            FL_atualDerivada = float(row[4]) * h_t
+    if k == steps - 1:
+        print("T helper: " + str(TL_h_atual - results[0][2] - TL_c_atualDerivada))
+        print("B: " + str(B_atual - results[0][3] - B_atualDerivada))
+
+    if DL_atual < 0:
+        print("Tempo do Erro: " + str(k*h_t) + " - DC LN: " + str(DL_atual))
+        exit(1)
+    if TL_c_atual < 0:
+        print("Tempo do Erro: " + str(k*h_t) + " - TC LN: " + str(TL_c_atual))
+        exit(1)
+    if TL_h_atual < 0:
+        print("Tempo do Erro: " + str(k*h_t) + " - TH LN: " + str(TL_h_atual))
+        exit(1)
+    if B_atual < 0:
+        print("Tempo do Erro: " + str(k*h_t) + " - B LN: " + str(B_atual))
+        exit(1)
+    if FL_atual < 0:
+        print("Tempo do Erro: " + str(k*h_t) + " - IGG LN: " + str(FL_atual))
+        exit(1)
     
     for i in range(tam):
         for j in range(tam):
@@ -288,7 +342,12 @@ for k in range(1,steps):
             da = dendritica_ativ_anterior[i][j]
             anticorpo = anticorpo_anterior[i][j]
             t_cito = t_cito_anterior[i][j]
-            
+
+            D_sum_ant += da
+            T_c_sum_ant += t_cito
+            F_sum_ant += anticorpo
+            odc_sum_ant += oligo_destr
+            mic_sum_ant += microglia
             # condição de contorno de Neumman microglia
             mic_iposterior = mic_anterior[i+1][j] if i != tam-1 else microglia - 2*h_x*bc_neumann_baixo
             mic_ianterior = mic_anterior[i-1][j] if i != 0 else microglia - 2*h_x*bc_neumann_cima
@@ -372,19 +431,43 @@ for k in range(1,steps):
             migracao_da = theta_LV[i][j]*parameters["gamma_D"]*(DL_atual - da)
 
             dendritica_ativ_atual[i][j] = da + h_t*(difusao_da + ativacao_dc_da + migracao_da)
+
+            Tc_Derivada += h_t*(difusao_t_cito - quimiotaxia_t_cito + migracao_t_cito)
+            D_Derivada += h_t*(difusao_da + ativacao_dc_da + migracao_da)
+            F_Derivada += h_t*(difusao_anticorpo - reacao_anticorpo + migracao_anticorpo)
+            Odc_Derivada += h_t*(parameters["r_m"]*f_func(microglia, mic_media)*(parameters["odc_media"] - oligo_destr) + fag_mic_ant + apoptose_tke)
+            mic_Derivada += h_t*(difusao_mic + reacao_mic - quimiotaxia_mic)
+
+            D_sum_atual += dendritica_ativ_atual[i][j]
+            T_c_sum_atual += t_cito_atual[i][j]
+            F_sum_atual += anticorpo_atual[i][j]
+            odc_sum_atual += olide_atual[i][j]
+            mic_sum_atual += mic_atual[i][j]
+
             if microglia < 0:
                 print("Tempo do Erro: " + str(k*h_t) + " - Variavel microglia: " + str(microglia))
+                exit(1)
             if da < 0:
                 print("Tempo do Erro: " + str(k*h_t) + " - Variavel DA: " + str(da))
+                exit(1)
             if dc < 0:
                 print("Tempo do Erro: " + str(k*h_t) + " - Variavel dc: " + str(dc))
+                exit(1)
             if t_cito < 0:
                 print("Tempo do Erro: " + str(k*h_t) + " - Variavel t_cito: " + str(t_cito))
+                exit(1)
             if anticorpo < 0:
                 print("Tempo do Erro: " + str(k*h_t) + " - Variavel anticorpo: " + str(anticorpo))
+                exit(1)
             if oligo_destr < 0:
                 print("Tempo do Erro: " + str(k*h_t) + " - Variavel oligo_destr: " + str(oligo_destr))
-            
+                exit(1)
+    if k == steps - 1:
+        print("Dendriticas: " + str(results[1][0] + D_sum_atual - results[0][0] - D_sum_ant - DL_atualDerivada - D_Derivada))
+        print("T citotoxicas: " + str(results[1][1] + T_c_sum_atual - results[0][1] - T_c_sum_ant - TL_c_atualDerivada - Tc_Derivada))
+        print("Anticorpos: " + str(results[1][4] + F_sum_atual - results[0][4] - F_sum_ant - FL_atualDerivada - F_Derivada))
+        print("Odcs: " + str(odc_sum_atual - odc_sum_ant - Odc_Derivada))
+        print("Microglia: " + str(mic_sum_atual - mic_sum_ant - mic_Derivada))
     olide_anterior = np.copy(olide_atual)
     dendritica_conv_anterior = np.copy(dendritica_conv_atual)
     dendritica_ativ_anterior = np.copy(dendritica_ativ_atual)
@@ -425,7 +508,7 @@ for k in range(1,steps):
         printMesh(k,t_cito_anterior, "tke")
         printMesh(k,anticorpo_anterior, "anticorpo")
         print("Tempo: "+ str(k*h_t))
-        print("DC-T: " + str(DendriticasTecido))
+        print("IgG-T: " + str(AnticorposTecido))
 
 #Fim da contagem do tempo
 toc = time.perf_counter()
