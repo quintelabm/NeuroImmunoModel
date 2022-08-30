@@ -354,10 +354,10 @@ for k in range(1,steps):
             mic_jposterior = mic_anterior[i][j+1] if j != tam-1 else microglia - 2*h_x*bc_neumann_direita
             mic_janterior = mic_anterior[i][j-1] if j != 0 else microglia - 2*h_x*bc_neumann_esquerda
 
-            mic_iiposterior = mic_anterior[i+2][j] if i < tam-2 else microglia - 2*h_x*bc_neumann_baixo
-            mic_iianterior = mic_anterior[i-2][j] if i > 1 else microglia - 2*h_x*bc_neumann_cima
-            mic_jjposterior = mic_anterior[i][j+2] if j < tam-2 else microglia - 2*h_x*bc_neumann_direita
-            mic_jjanterior = mic_anterior[i][j-2] if j > 1 else microglia - 2*h_x*bc_neumann_esquerda
+            mic_iiposterior = mic_iposterior
+            mic_iianterior = mic_ianterior
+            mic_jjposterior = mic_jposterior
+            mic_jjanterior = mic_janterior
 
             # condição de contorno de Neumman dc convencional
             dc_iposterior = dendritica_conv_anterior[i+1][j] if i != tam-1 else dc - 2*h_x*bc_neumann_baixo
@@ -365,10 +365,10 @@ for k in range(1,steps):
             dc_jposterior = dendritica_conv_anterior[i][j+1] if j != tam-1 else dc - 2*h_x*bc_neumann_direita
             dc_janterior = dendritica_conv_anterior[i][j-1] if j != 0 else dc - 2*h_x*bc_neumann_esquerda
 
-            dc_iiposterior = dendritica_conv_anterior[i+2][j] if i < tam-2 else dc - 2*h_x*bc_neumann_baixo
-            dc_iianterior = dendritica_conv_anterior[i-2][j] if i > 1 else dc - 2*h_x*bc_neumann_cima
-            dc_jjposterior = dendritica_conv_anterior[i][j+2] if j < tam-2 else dc - 2*h_x*bc_neumann_direita
-            dc_jjanterior = dendritica_conv_anterior[i][j-2] if j > 1 else dc - 2*h_x*bc_neumann_esquerda
+            dc_iiposterior = dc_iposterior
+            dc_iianterior = dc_ianterior
+            dc_jjposterior = dc_jposterior
+            dc_jjanterior = dc_janterior
 
             # condição de contorno de Neumman de ativadas
             da_iposterior = dendritica_ativ_anterior[i+1][j] if i != tam-1 else da - 2*h_x*bc_neumann_baixo
@@ -388,10 +388,10 @@ for k in range(1,steps):
             t_cito_jposterior = t_cito_anterior[i][j+1] if j != tam-1 else t_cito - 2*h_x*bc_neumann_direita
             t_cito_janterior = t_cito_anterior[i][j-1] if j != 0 else t_cito - 2*h_x*bc_neumann_esquerda
 
-            t_cito_iiposterior = dendritica_conv_anterior[i+2][j] if i < tam-2 else t_cito - 2*h_x*bc_neumann_baixo
-            t_cito_iianterior = dendritica_conv_anterior[i-2][j] if i > 1 else t_cito - 2*h_x*bc_neumann_cima
-            t_cito_jjposterior = dendritica_conv_anterior[i][j+2] if j < tam-2 else t_cito - 2*h_x*bc_neumann_direita
-            t_cito_jjanterior = dendritica_conv_anterior[i][j-2] if j > 1 else t_cito - 2*h_x*bc_neumann_esquerda
+            t_cito_iiposterior = t_cito_iposterior
+            t_cito_iianterior = t_cito_ianterior
+            t_cito_jjposterior = t_cito_jposterior
+            t_cito_jjanterior = t_cito_janterior
 
             # condição de contorno de Neumman anticorpos
             f_iposterior = anticorpo_anterior[i+1][j] if i != tam-1 else anticorpo - 2*h_x*bc_neumann_baixo
