@@ -142,12 +142,13 @@ dendritica_ativ_atual = np.zeros((int(L/h_x), int(L/h_x)))
 estable_B = 8.4*10**1
 estable_T_c = 8.4*10**1
 estable_T_h = 8.4*10**1
-linfonodo_eqs = np.zeros(5)
+linfonodo_eqs = np.zeros(6)
 linfonodo_eqs[0]= 0    # Dendritic cells
 linfonodo_eqs[1]= estable_T_c/2  # Cytotoxic T cells
 linfonodo_eqs[2]= estable_T_h/2  # Helper T cells
 linfonodo_eqs[3]= estable_B/2    # B cells
 linfonodo_eqs[4]= 0    # Antibodies
+linfonodo_eqs[5]= 0 # Plasma cells
 
 #Valores das populaçoes que migram que estão em contato com os vasos sanguineos ou linfaticos
 DendriticasTecido = 0
@@ -225,6 +226,7 @@ parameters = {
     "alpha_T_h": 1.5,#0.01,
     "alpha_T_c": 0.5,
     "alpha_B": 0.1,
+    "alpha_P": 5,
     "b_T": 0.17,#0.017,
     "b_Tc": 0.17,#0.017,
     "b_rho": 10**2,#10**5,
@@ -232,9 +234,12 @@ parameters = {
     "rho_T": 2,
     "rho_Tc": 2,
     "rho_B": 11,#16,
+    "rho_P": 3,
+    "b_p_p": 2.02*10**6,
     "rho_F": 10**-2,#5.1*10**-2,
     "estable_T_h": estable_T_h,
     "estable_B": estable_B,
+    "estable_P": 80,
     "estable_T_c": estable_T_c,
     "DendriticasTecido": DendriticasTecido,
     "AnticorposTecido": AnticorposTecido,
@@ -258,12 +263,14 @@ TL_c_vetor = np.zeros(steps)
 TL_h_vetor = np.zeros(steps)
 B_vetor = np.zeros(steps)
 FL_vetor = np.zeros(steps)
+PL_vetor = np.zeros(steps)
 
 DL_vetor[0] = linfonodo_eqs[0]
 TL_c_vetor[0] = linfonodo_eqs[1]
 TL_h_vetor[0] = linfonodo_eqs[2]
 B_vetor[0] = linfonodo_eqs[3]
 FL_vetor[0] = linfonodo_eqs[4]
+PL_vetor[0] = linfonodo_eqs[5]
 
 printMesh(0,olide_anterior, "odc")
 printMesh(0,mic_anterior, "microglia")
@@ -282,6 +289,7 @@ for k in range(1,steps):
     TL_h_atual = results[1][2]
     B_atual = results[1][3]
     FL_atual = results[1][4]
+    PL_atual = results[1][5]
     #variaveis pra verificar se as migracoes de um ht pro outro estao funcionando
     DL_atualDerivada = 0
     TL_c_atualDerivada = 0
@@ -332,6 +340,9 @@ for k in range(1,steps):
         exit(1)
     if FL_atual < 0:
         print("Tempo do Erro: " + str(k*h_t) + " - IGG LN: " + str(FL_atual))
+        exit(1)
+    if PL_atual < 0:
+        print("Tempo do Erro: " + str(k*h_t) + " - Plasma LN: " + str(PL_atual))
         exit(1)
     
     for i in range(tam):
@@ -493,12 +504,13 @@ for k in range(1,steps):
     parameters["DendriticasTecido"] = DendriticasTecido/V_LV
     parameters["AnticorposTecido"] = AnticorposTecido/V_BV
     
-    linfonodo_eqs = [DL_atual, TL_c_atual, TL_h_atual, B_atual, FL_atual]
+    linfonodo_eqs = [DL_atual, TL_c_atual, TL_h_atual, B_atual, FL_atual, PL_atual]
     DL_vetor[k] = DL_atual
     TL_c_vetor[k] = TL_c_atual
     TL_h_vetor[k] = TL_h_atual
     B_vetor[k] = B_atual
     FL_vetor[k] = FL_atual
+    PL_vetor[k] = PL_atual
 
     if k%intervalo_figs ==0 or k == steps-1:
         printMesh(k,olide_anterior, "odc")

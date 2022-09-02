@@ -2,12 +2,13 @@ import numpy as np
 
 def diferential(y, t, parameters):
     
-    dy = np.zeros(5)
+    dy = np.zeros(6)
     DC = y[0]
     TC = y[1]
     TH = y[2]
     B = y[3]
     Igg = y[4]
+    PL = y[5]
 
     # Dendritic cells
 
@@ -34,10 +35,12 @@ def diferential(y, t, parameters):
     dy[3] = ativacaoB + homeostaseB
     
     # # Antibodies
-    producaoF = parameters["rho_F"] * B
+    producaoF = parameters["rho_F"] * PL
     migracaoF = ((parameters["gamma_F"] * (Igg - parameters["AnticorposTecido"])) * (parameters["V_BV"] / parameters["V_LN"]))
     dy[4] = producaoF - migracaoF
-    # outputFile = open("verifyMigration.txt", "w")
-    # outputFile.write(str(dy[0]) + "," + str(dy[1]) + "," + str(dy[2]) + "," + str(dy[3]) + "," + str(dy[4]) + "\n")
-    # outputFile.close()
+
+    ativacaoP = parameters["b_rho_b"] * (TH * DC * B)
+    homeostaseP = parameters["alpha_P"] * (parameters["estable_P"] - PL)
+    dy[5] = ativacaoP + homeostaseP
+
     return dy
