@@ -39,7 +39,7 @@ def diferential(y, t, parameters):
     migracaoF = ((parameters["gamma_F"] * (Igg - parameters["AnticorposTecido"])) * (parameters["V_BV"] / parameters["V_LN"]))
     dy[4] = producaoF - migracaoF
 
-    ativacaoP = parameters["b_rho_b"] * (TH * DC * B)
+    ativacaoP = parameters["b_rho_b"] * (parameters["rho_P"] * TH * DC * B)
     homeostaseP = parameters["alpha_P"] * (parameters["estable_P"] - PL)
     dy[5] = ativacaoP + homeostaseP
 
