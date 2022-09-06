@@ -139,8 +139,8 @@ dendritica_conv_atual = np.zeros((int(L/h_x), int(L/h_x)))
 dendritica_ativ_atual = np.zeros((int(L/h_x), int(L/h_x)))
 
 # Modelo linfonodo
-estable_B = 8.4*10**1
-estable_T_c = 8.4*10**1
+estable_B = 2.4*10**1
+estable_T_c = 4*10**1
 estable_T_h = 8.4*10**1
 linfonodo_eqs = np.zeros(6)
 linfonodo_eqs[0]= 0    # Dendritic cells
@@ -239,7 +239,7 @@ parameters = {
     "rho_F": 10**-2,#5.1*10**-2,
     "estable_T_h": estable_T_h,
     "estable_B": estable_B,
-    "estable_P": 80,
+    "estable_P": 20,
     "estable_T_c": estable_T_c,
     "DendriticasTecido": DendriticasTecido,
     "AnticorposTecido": AnticorposTecido,
