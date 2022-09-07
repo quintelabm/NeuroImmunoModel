@@ -195,7 +195,7 @@ def printMesh(time, population, type):
     plt.savefig('results/'+type+'/fig'+'{:.4f}'.format(time*h_t)+'.png', dpi = 300)
     plt.clf()
 
-d_mic = 60*24*6.6*10**-5
+d_mic = 60*(24/2.5*2.5)*6.6*10**-5
 
 parameters = {
     "chi": 0.298*60*2, # Quimioatracao. valor por Dia
@@ -224,13 +224,13 @@ parameters = {
 
 
     "alpha_T_h": 7.5,#0.01,
-    "alpha_T_c": 7.5,
+    "alpha_T_c": 3.5,
     "alpha_B": 0.1,
     "alpha_P": 5,
-    "b_T": 0.17,#0.017,
-    "b_Tc": 0.17,#0.017,
-    "b_rho": 10**2,#10**5,
-    "b_rho_b": 6.02*10,#*10**3,
+    "b_T": 0.17,
+    "b_Tc": 0.17,
+    "b_rho": 10**1,#10**2,
+    "b_rho_b": 6.02,#*10,
     "rho_T": 2,
     "rho_Tc": 2,
     "rho_B": 11,#16,
