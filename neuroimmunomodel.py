@@ -144,9 +144,9 @@ estable_T_c = 4*10**1
 estable_T_h = 8.4*10**1
 linfonodo_eqs = np.zeros(6)
 linfonodo_eqs[0]= 0    # Dendritic cells
-linfonodo_eqs[1]= estable_T_c/2  # Cytotoxic T cells
-linfonodo_eqs[2]= estable_T_h/2  # Helper T cells
-linfonodo_eqs[3]= estable_B/2    # B cells
+linfonodo_eqs[1]= estable_T_c  # Cytotoxic T cells
+linfonodo_eqs[2]= estable_T_h  # Helper T cells
+linfonodo_eqs[3]= estable_B    # B cells
 linfonodo_eqs[4]= 0    # Antibodies
 linfonodo_eqs[5]= 0 # Plasma cells
 
@@ -226,11 +226,11 @@ parameters = {
     "alpha_T_h": 7.5,#0.01,
     "alpha_T_c": 3.5,
     "alpha_B": 0.1,
-    "alpha_P": 5,
+    "alpha_P": 8,
     "b_T": 0.17,
     "b_Tc": 0.17,
     "b_rho": 10**1,#10**2,
-    "b_rho_b": 6.02,#*10,
+    "b_rho_b": 3.02,#*10,
     "rho_T": 2,
     "rho_Tc": 2,
     "rho_B": 11,#16,
