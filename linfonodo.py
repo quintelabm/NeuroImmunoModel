@@ -12,7 +12,7 @@ def diferential(y, t, parameters):
 
     # Dendritic cells
 
-    dy[0] = parameters["gamma_D"] * (parameters["DendriticasTecido"] - DC) * (parameters["V_LV"] / parameters["V_LN"])
+    dy[0] = parameters["gamma_D"] * (parameters["DendriticasTecido"] - DC) * (parameters["V_LV"] / parameters["V_LN"]) - parameters["d_dl"]*DC
 
     # Cytotoxic T cells
 
