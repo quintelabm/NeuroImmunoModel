@@ -223,21 +223,20 @@ parameters = {
     "odc_media": 400,
 
 
-    "alpha_T_h": 7.5,#0.01,
+    "alpha_T_h": 3.5,#0.01,
     "alpha_T_c": 3.5,
     "alpha_B": 0.1,
     "alpha_P": 8,
     "b_T": 0.17,
     "b_Tc": 0.17,
     "b_rho": 10**1,#10**2,
-    "b_rho_b": 3.02,#*10,
+    "b_rho_b": 6.02,#*10,
     "rho_T": 2,
     "rho_Tc": 2,
     "rho_B": 11,#16,
     "rho_P": 3,
     "b_p_p": 2.02*10**6,
     "rho_F": 10**-2,#5.1*10**-2,
-    "d_dl": 0.2, # Decaimento DC no linfonodo
     "estable_T_h": estable_T_h,
     "estable_B": estable_B,
     "estable_P": 20,
