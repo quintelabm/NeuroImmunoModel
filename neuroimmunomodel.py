@@ -237,7 +237,7 @@ parameters = {
     "rho_P": 3,
     "b_p_p": 2.02*10**6,
     "rho_F": 10**-2,#5.1*10**-2,
-    "d_dl": 0.1, # Decaimento DC no linfonodo
+    "d_dl": 0.2, # Decaimento DC no linfonodo
     "estable_T_h": estable_T_h,
     "estable_B": estable_B,
     "estable_P": 20,
