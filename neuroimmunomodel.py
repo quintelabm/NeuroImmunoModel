@@ -223,13 +223,13 @@ parameters = {
     "odc_media": 400,
 
 
-    "alpha_T_h": 3.5,#0.01,
-    "alpha_T_c": 3.5,
+    "alpha_T_h": 0.5,#0.01,
+    "alpha_T_c": 0.5,
     "alpha_B": 0.1,
     "alpha_P": 8,
-    "b_T": 0.17,
-    "b_Tc": 0.17,
-    "b_rho": 6,#10,
+    "b_T": 0.017,
+    "b_Tc": 0.017,
+    "b_rho": 0.6,#10,
     "b_rho_b": 3.02,#*10,
     "rho_T": 2,
     "rho_Tc": 2,
