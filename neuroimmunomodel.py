@@ -85,7 +85,7 @@ def checkBVeLV():
     plt.show()
     plt.clf()
 
-# checkBVeLV()
+checkBVeLV()
 
 def calculaQuimiotaxia(ponto_posterior_j, ponto_anterior_j, ponto_posterior_i, ponto_anterior_i, ponto_atual, valor_medio, gradiente_odc_i, gradiente_odc_j):
     gradiente_pop_i = 0
@@ -195,7 +195,7 @@ def printMesh(time, population, type):
     plt.savefig('results/'+type+'/fig'+'{:.4f}'.format(time*h_t)+'.png', dpi = 300)
     plt.clf()
 
-d_mic = 60*(24/2.5*2.5)*6.6*10**-5
+d_mic = 60*24/(2.5**2)*6.6*10**-5
 
 parameters = {
     "chi": 0.298*60*2, # Quimioatracao. valor por Dia
@@ -227,8 +227,8 @@ parameters = {
     "alpha_T_c": 0.5,
     "alpha_B": 0.1,
     "alpha_P": 8,
-    "b_T": 0.017,
-    "b_Tc": 0.017,
+    "b_T": 0.17,
+    "b_Tc": 0.17,
     "b_rho": 0.6,#10,
     "b_rho_b": 3.02,#*10,
     "rho_T": 2,
