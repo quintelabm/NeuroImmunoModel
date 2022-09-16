@@ -25,7 +25,7 @@ gradiente = lambda ponto_posterior, ponto_anterior, valor_maximo: quimiotaxia(po
 quimiotaxia = lambda ponto_atual, valor_maximo: ponto_atual/(valor_maximo + ponto_atual)
 f_func = lambda populacao, valor_maximo: populacao*populacao/(valor_maximo + populacao)
 
-T_final = 28# Dia
+T_final = 28*5# Dia
 h_t = 0.0002
 
 L = 20  # Comprimento da malha
