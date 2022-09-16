@@ -1,18 +1,46 @@
 import numpy as np
 
-def diferential(y, parameters):
+def diferential(y, t, parameters):
     
-    dy = np.zeros(5)
-    
+    dy = np.zeros(6)
+    DC = y[0]
+    TC = y[1]
+    TH = y[2]
+    B = y[3]
+    Igg = y[4]
+    PL = y[5]
+
     # Dendritic cells
-    dy[0] = parameters["gamma_D"] * (parameters["DendriticasTecido"] - y[0]) * (parameters["V_LV"] / parameters["V_LN"])
+
+    dy[0] = parameters["gamma_D"] * (parameters["DendriticasTecido"] - DC) * (parameters["V_LV"] / parameters["V_LN"])
+    
     # Cytotoxic T cells
-    dy[1] = parameters["b_Tc"]*(parameters["rho_Tc"] * y[1] * y[0] - y[1]*y[0]) + parameters["alpha_T_c"] * (parameters["estable_T_c"] - y[1]) - (parameters["gamma_T"] * (y[1] - parameters["TcitotoxicaTecido"])) * (parameters["V_BV"] / parameters["V_LN"])
+
+    ativacaoC = parameters["b_Tc"]*(parameters["rho_Tc"] * TC * DC - TC*DC)
+    homeostaseC = parameters["alpha_T_c"] * (parameters["estable_T_c"] - TC)
+    migracaoC = (parameters["gamma_T"] * (TC - parameters["TcitotoxicaTecido"])) * (parameters["V_BV"] / parameters["V_LN"])
+
+    dy[1] = ativacaoC + homeostaseC - migracaoC
+
     # # Helper T cells
-    dy[2] = parameters["b_T"]*(parameters["rho_T"] * y[2] * y[0] - y[2]*y[0]) - (parameters["b_rho"] * y[2] * y[0] * y[3]) + parameters["alpha_T_h"] * (parameters["estable_T_h"] - y[2])
+    
+    ativacaoH = parameters["b_T"]*(parameters["rho_T"] * TH * DC - TH*DC)
+    homeostaseH = parameters["alpha_T_h"] * (parameters["estable_T_h"] - TH)
+    H_decaimento_ativacaoB = (parameters["b_rho"] * TH * DC * B)
+    dy[2] = ativacaoH - H_decaimento_ativacaoB + homeostaseH
+
     # # B cells
-    dy[3] = (parameters["b_rho_b"] * ((parameters["rho_B"] * y[2] * y[0]) - (y[2] * y[0] * y[3]))) + parameters["alpha_B"] * (parameters["estable_B"] - y[3])
+    ativacaoB = (parameters["b_rho_b"] * ((parameters["rho_B"] * TH * DC) - (TH * DC * B)))
+    homeostaseB = parameters["alpha_B"] * (parameters["estable_B"] - B)
+    dy[3] = ativacaoB + homeostaseB
+    
     # # Antibodies
-    dy[4] = parameters["rho_F"] * y[3] - ((parameters["gamma_F"] * (y[4] - parameters["AnticorposTecido"])) * (parameters["V_BV"] / parameters["V_LN"]))
+    producaoF = parameters["rho_F"] * PL
+    migracaoF = ((parameters["gamma_F"] * (Igg - parameters["AnticorposTecido"])) * (parameters["V_BV"] / parameters["V_LN"]))
+    dy[4] = producaoF - migracaoF
+
+    ativacaoP = parameters["b_rho_p"] * (parameters["rho_P"] * TH * DC * B)
+    homeostaseP = parameters["alpha_P"] * (parameters["estable_P"] - PL)
+    dy[5] = ativacaoP + homeostaseP
 
     return dy
