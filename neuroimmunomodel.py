@@ -222,6 +222,9 @@ parameters = {
     "dc_media": dc_media,
     "mic_media": mic_media,
     "odc_media": 400,
+    "c_dc": 0.1,
+    "c_da": 0.1,
+    "c_dl": 0.1,
 
 
     "alpha_T_h": 0.1,#0.01,
@@ -442,14 +445,16 @@ for k in range(1,steps):
             difusao_dc = parameters["d_dc"]*calculaDifusao(dc_jposterior, dc_janterior, dc_iposterior, dc_ianterior, dc)
             reacao_dc = parameters["mu_dc"]*oligo_destr*(parameters["dc_media"] - dc)
             ativacao_dc_da = parameters["b_d"]*oligo_destr*dc
+            decaimento_dc = parameters["c_dc"]*dc
 
-            dendritica_conv_atual[i][j] = dc + h_t*(reacao_dc + difusao_dc - quimiotaxia_dc - ativacao_dc_da)
+            dendritica_conv_atual[i][j] = dc + h_t*(reacao_dc + difusao_dc - quimiotaxia_dc - ativacao_dc_da - decaimento_dc)
             
             #DA ativada
             difusao_da = parameters["d_da"]*calculaDifusao(da_jposterior, da_janterior, da_iposterior, da_ianterior, da)
             migracao_da = theta_LV[i][j]*parameters["gamma_D"]*(DL_atual - da)
+            decaimento_da = parameters["c_da"]*da
 
-            dendritica_ativ_atual[i][j] = da + h_t*(difusao_da + ativacao_dc_da + migracao_da)
+            dendritica_ativ_atual[i][j] = da + h_t*(difusao_da + ativacao_dc_da + migracao_da - decaimento_da)
 
             Tc_Derivada += h_t*(difusao_t_cito - quimiotaxia_t_cito + migracao_t_cito)
             D_Derivada += h_t*(difusao_da + ativacao_dc_da + migracao_da)
