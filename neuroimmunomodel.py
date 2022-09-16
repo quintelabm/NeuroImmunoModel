@@ -1,3 +1,4 @@
+from cProfile import label
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
@@ -35,7 +36,7 @@ x = np.linspace(0, L, int(L/h_x))
 tam = len(x)
 steps = len(t)
 
-num_figuras = T_final
+num_figuras = 1
 intervalo_figs = int(steps/num_figuras)
 
 def verifica_cfl(difusao_mic, difusao_dc, difusao_da, quimiotaxia_dc, quimiotaxia_mic):
@@ -85,7 +86,7 @@ def checkBVeLV():
     plt.show()
     plt.clf()
 
-checkBVeLV()
+# checkBVeLV()
 
 def calculaQuimiotaxia(ponto_posterior_j, ponto_anterior_j, ponto_posterior_i, ponto_anterior_i, ponto_atual, valor_medio, gradiente_odc_i, gradiente_odc_j):
     gradiente_pop_i = 0
@@ -264,7 +265,14 @@ TL_h_vetor = np.zeros(steps)
 B_vetor = np.zeros(steps)
 FL_vetor = np.zeros(steps)
 PL_vetor = np.zeros(steps)
+DCT_vetor = np.zeros(steps)
+DAT_vetor = np.zeros(steps)
+DCTPV_vetor = np.zeros(steps)
+DATPV_vetor = np.zeros(steps)
 
+
+DAT_vetor[0] = 0
+DATPV_vetor[0] = 0
 DL_vetor[0] = linfonodo_eqs[0]
 TL_c_vetor[0] = linfonodo_eqs[1]
 TL_h_vetor[0] = linfonodo_eqs[2]
@@ -491,9 +499,10 @@ for k in range(1,steps):
     DendriticasTecido = 0
     AnticorposTecido = 0
     TcitotoxicaTecido = 0
-    
+    DCT = 0
     for i in range(int(L/h_x)):
         for j in range(int(L/h_x)):
+            DCT += dendritica_ativ_atual[i][j]
             if theta_LV[i][j] == 1:
                 DendriticasTecido += dendritica_ativ_atual[i][j]
             if theta_BV[i][j] == 1:
@@ -503,7 +512,8 @@ for k in range(1,steps):
     parameters["TcitotoxicaTecido"] = TcitotoxicaTecido/V_BV
     parameters["DendriticasTecido"] = DendriticasTecido/V_LV
     parameters["AnticorposTecido"] = AnticorposTecido/V_BV
-    
+    DCT_vetor[k] = DCT
+    DCTPV_vetor[k] = DendriticasTecido
     linfonodo_eqs = [DL_atual, TL_c_atual, TL_h_atual, B_atual, FL_atual, PL_atual]
     DL_vetor[k] = DL_atual
     TL_c_vetor[k] = TL_c_atual
@@ -532,7 +542,10 @@ print("Tempo de execução: " + str(final_time) + " min")
 #Transforma de dias para horas no plot
 # t = np.multiply(t,24)
 
-plt.plot(t,DL_vetor)
+plt.plot(t,DL_vetor, '-b', label="LN")
+plt.plot(t,DCTPV_vetor, '--r', label="DCA-PVS")
+plt.plot(t,DCT_vetor, '--g', label="DCA-Tecido")
+plt.legend()
 plt.title("Lymph node - Activated dendritic cells")
 plt.xlabel("Time (days)")
 plt.ylabel("Concentration (Cells/$mm^2$)")
