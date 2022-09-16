@@ -8,9 +8,9 @@ gradiente = lambda ponto_posterior, ponto_anterior, valor_maximo: quimiotaxia(po
 quimiotaxia = lambda ponto_atual, valor_maximo: ponto_atual/(valor_maximo + ponto_atual)
 f_func = lambda populacao, valor_maximo: populacao*populacao/(valor_maximo + populacao)
 
-f = open("returns.txt", "r")
+f = open("outputSAOaT.txt", "r")
 f.close()
-T_final = 28# Dia
+T_final = 0.05# Dia
 h_t = 0.0002
 
 L = 20  # Comprimento da malha
@@ -421,7 +421,7 @@ def modelo(chi, d_mic, mu_m, r_m, d_dc, d_da, d_t_cit, d_anti, lamb_f_m, b_d, r_
         qoi[k] = aux_qoi
         
     print("Terminei de rodar uma vez!")
-    outputFile = open("returns.txt", "a")
+    outputFile = open("outputSAOaT.txt", "a")
     outputFile.write(str(qoi[-1]) + "\n")
     outputFile.close()
     return qoi[-1]
@@ -434,45 +434,49 @@ d_dc_mean = 1520*10**-5
 d_da_mean = 1520*10**-5
 d_t_cit_mean = 1520*10**-5
 d_anti_mean = 1520*10**-4
-lamb_f_m_mean = 60*24*3.96*10**-6
+lamb_f_m_mean = 5.702*10**-3
 b_d_mean = 0.001
 r_dc_mean = 0.001
 r_t_mean = 0.1
 mu_dc_mean = 60*24*3*10**-4
 gamma_D_mean = 0.01
 gamma_F_mean = 0.03
-gamma_T_mean = 0.2
-alpha_T_h_mean = 0.01 
-alpha_T_c_mean = 0.5
-alpha_B_mean = 1
-b_T_mean = 0.017
-b_Tc_mean = 0.005
-b_rho_mean = 10**5
-b_rho_b_mean = 6.02*10**3
+gamma_T_mean = 0.02
+alpha_T_h_mean = 0.1 
+alpha_T_c_mean = 0.1
+alpha_B_mean = 0.1
+alpha_P_mean = 1
+b_T_mean = 0.17
+b_Tc_mean = 0.017
+b_rho_mean = 0.6
+b_rho_b_mean = 3.02
 rho_T_mean = 2
 rho_Tc_mean = 2
-rho_B_mean = 16
-rho_F_mean = 5.1*10**2
-estable_T_h_mean = 8.4*10**-3
-estable_B_mean = 8.4*10**-4
-estable_T_c_mean = 8.4*10**-3
-parameters = [chi_mean, d_mic_mean, mu_m_mean, r_m_mean, d_dc_mean, d_da_mean, d_t_cit_mean, d_anti_mean, lamb_f_m_mean, b_d_mean, r_dc_mean, r_t_mean, mu_dc_mean, gamma_D_mean, gamma_F_mean, gamma_T_mean, alpha_T_h_mean, alpha_T_c_mean, alpha_B_mean, b_T_mean, b_Tc_mean, b_rho_mean, b_rho_b_mean, rho_T_mean, rho_Tc_mean, rho_B_mean, rho_F_mean, estable_T_h_mean, estable_B_mean, estable_T_c_mean]
+rho_B_mean = 11
+rho_P_mean = 3
+b_rho_p_mean = 1.02
+rho_F_mean = 5.1*10**-2
+estable_T_h_mean = 84
+estable_B_mean = 24
+estable_P_mean = 20
+estable_T_c_mean = 40
+parameters = [chi_mean, d_mic_mean, mu_m_mean, r_m_mean, d_dc_mean, d_da_mean, d_t_cit_mean, d_anti_mean, lamb_f_m_mean, b_d_mean, r_dc_mean, r_t_mean, mu_dc_mean, gamma_D_mean, gamma_F_mean, gamma_T_mean, alpha_T_h_mean, alpha_T_c_mean, alpha_B_mean, alpha_P_mean, b_T_mean, b_Tc_mean, b_rho_mean, b_rho_b_mean, rho_T_mean, rho_Tc_mean, rho_B_mean, rho_P_mean, b_rho_p_mean, rho_F_mean, estable_T_h_mean, estable_B_mean, estable_P_mean, estable_T_c_mean]
 def runSAOaT():
-    parameters = [chi_mean, d_mic_mean, mu_m_mean, r_m_mean, d_dc_mean, d_da_mean, d_t_cit_mean, d_anti_mean, lamb_f_m_mean, b_d_mean, r_dc_mean, r_t_mean, mu_dc_mean, gamma_D_mean, gamma_F_mean, gamma_T_mean, alpha_T_h_mean, alpha_T_c_mean, alpha_B_mean, b_T_mean, b_Tc_mean, b_rho_mean, b_rho_b_mean, rho_T_mean, rho_Tc_mean, rho_B_mean, rho_F_mean, estable_T_h_mean, estable_B_mean, estable_T_c_mean]
+    parameters = [chi_mean, d_mic_mean, mu_m_mean, r_m_mean, d_dc_mean, d_da_mean, d_t_cit_mean, d_anti_mean, lamb_f_m_mean, b_d_mean, r_dc_mean, r_t_mean, mu_dc_mean, gamma_D_mean, gamma_F_mean, gamma_T_mean, alpha_T_h_mean, alpha_T_c_mean, alpha_B_mean, alpha_P_mean, b_T_mean, b_Tc_mean, b_rho_mean, b_rho_b_mean, rho_T_mean, rho_Tc_mean, rho_B_mean, rho_P_mean, b_rho_p_mean, rho_F_mean, estable_T_h_mean, estable_B_mean, estable_P_mean, estable_T_c_mean]
     #Execução do modelo base
-    modelo(parameters[0],parameters[1],parameters[2],parameters[3],parameters[4],parameters[5],parameters[6],parameters[7],parameters[8],parameters[9],parameters[10],parameters[11],parameters[12],parameters[13],parameters[14],parameters[15],parameters[16],parameters[17],parameters[18],parameters[19],parameters[20],parameters[21],parameters[22],parameters[23],parameters[24],parameters[25],parameters[26],parameters[27],parameters[28],parameters[29])
+    modelo(parameters[0],parameters[1],parameters[2],parameters[3],parameters[4],parameters[5],parameters[6],parameters[7],parameters[8],parameters[9],parameters[10],parameters[11],parameters[12],parameters[13],parameters[14],parameters[15],parameters[16],parameters[17],parameters[18],parameters[19],parameters[20],parameters[21],parameters[22],parameters[23],parameters[24],parameters[25],parameters[26],parameters[27],parameters[28],parameters[29],parameters[30],parameters[31],parameters[32])
     for i in range(len(parameters)):
         parameter_aux = parameters[i]
         parameters[i] = parameter_aux*1.1
-        modelo(parameters[0],parameters[1],parameters[2],parameters[3],parameters[4],parameters[5],parameters[6],parameters[7],parameters[8],parameters[9],parameters[10],parameters[11],parameters[12],parameters[13],parameters[14],parameters[15],parameters[16],parameters[17],parameters[18],parameters[19],parameters[20],parameters[21],parameters[22],parameters[23],parameters[24],parameters[25],parameters[26],parameters[27],parameters[28],parameters[29])
+        modelo(parameters[0],parameters[1],parameters[2],parameters[3],parameters[4],parameters[5],parameters[6],parameters[7],parameters[8],parameters[9],parameters[10],parameters[11],parameters[12],parameters[13],parameters[14],parameters[15],parameters[16],parameters[17],parameters[18],parameters[19],parameters[20],parameters[21],parameters[22],parameters[23],parameters[24],parameters[25],parameters[26],parameters[27],parameters[28],parameters[29],parameters[30],parameters[31],parameters[32])
         parameters[i] = parameter_aux*.9
-        modelo(parameters[0],parameters[1],parameters[2],parameters[3],parameters[4],parameters[5],parameters[6],parameters[7],parameters[8],parameters[9],parameters[10],parameters[11],parameters[12],parameters[13],parameters[14],parameters[15],parameters[16],parameters[17],parameters[18],parameters[19],parameters[20],parameters[21],parameters[22],parameters[23],parameters[24],parameters[25],parameters[26],parameters[27],parameters[28],parameters[29])
+        modelo(parameters[0],parameters[1],parameters[2],parameters[3],parameters[4],parameters[5],parameters[6],parameters[7],parameters[8],parameters[9],parameters[10],parameters[11],parameters[12],parameters[13],parameters[14],parameters[15],parameters[16],parameters[17],parameters[18],parameters[19],parameters[20],parameters[21],parameters[22],parameters[23],parameters[24],parameters[25],parameters[26],parameters[27],parameters[28],parameters[29],parameters[30],parameters[31],parameters[32])
         parameters[i] = parameter_aux
 
     num_exec = len(parameters)*2 + 1
     output_file = np.zeros(num_exec)
     i = 0
-    with open("returns.txt", "r") as f:
+    with open("outputSAOaT.txt", "r") as f:
         # output_file = f.readlines()
         for y in f.read().split("\n"):
             print(y)
@@ -514,4 +518,5 @@ def printResult():
     # plt.barh(labels, indexes, color ='maroon')
     # plt.savefig("SAOaT-Results.png", dpi = 900)
 
+runSAOaT()
 printResult()
