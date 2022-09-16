@@ -1,5 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import random as rnd
+from scipy.integrate import odeint
 from linfonodo import diferential
 
 gradiente = lambda ponto_posterior, ponto_anterior, valor_maximo: quimiotaxia(ponto_posterior, valor_maximo) - quimiotaxia(ponto_anterior, valor_maximo)
@@ -32,18 +34,19 @@ V_BV = 0
 V_LV = 0
 
 theta_LV = np.zeros((int(L/h_x), int(L/h_x)))
-for i in range(int(L/h_x)):
-    for j in range(int(L/h_x)):
-        if (i == L/h_x - 1 and j == L/(h_x*2)) or (i == 0 and j == L/(h_x*2)) or (i == L/(h_x*2) and j == 0) or (i == L/(h_x*2) and j == L/h_x - 1) or (i == int(L/h_x)/2 and j == int(L/h_x)/2):
-            theta_LV[i][j] = 1
-            V_LV += 1
-
 theta_BV = np.zeros((int(L/h_x), int(L/h_x)))
 for i in range(int(L/h_x)):
     for j in range(int(L/h_x)):
-        if (i == L/h_x - 1 and j == L/h_x - 1) or (i == 0 and j == L/h_x - 1) or (i == L/h_x - 1 and j == 0) or (i == 0 and j == 0):
-            theta_BV[i][j] = 1
-            V_BV += 1
+        prob = rnd.uniform(0,1)
+        if prob <= .1:
+            theta_LV[i][j] = 1
+            V_LV += 1
+            if j == int(L/h_x) -1:
+                theta_BV[i][0] = 1
+                V_BV += 1
+            else:
+                theta_BV[i][j+1] = 1
+                V_BV += 1
 
 V_LN = 160
 
@@ -85,61 +88,18 @@ def calculaQuimiotaxia(ponto_posterior_j, ponto_anterior_j, ponto_posterior_i, p
 def calculaDifusao(ponto_posterior_j, ponto_anterior_j, ponto_posterior_i, ponto_anterior_i, ponto_atual):
     return (ponto_anterior_i + ponto_anterior_j + ponto_posterior_i + ponto_posterior_j - 4*ponto_atual)/(h_x**2)
 
-# IC
-# microglia
-mic_media = 350
-mic_anterior = np.zeros((int(L/h_x), int(L/h_x)))
 
-for i in range(int(L/h_x)):
-    for j in range(int(L/h_x)):
-        if (i-int(L/h_x)/2)**2 + (j-int(L/h_x)/2)**2 < 20/(2.5**2):
-            mic_anterior[i][j] = mic_media/3.0
-
-# T citotóxica
-t_cito_anterior = np.zeros((int(L/h_x), int(L/h_x)))
-# Ol destruidos
-odc_media = 400
-olide_anterior = np.zeros((int(L/h_x), int(L/h_x)))
-
-# anticorpo
-anticorpo_anterior = np.zeros((int(L/h_x), int(L/h_x)))
-
-# Dendríticas convencionais
-dc_media = 33 #Valeria testa
-dendritica_conv_anterior = np.zeros((int(L/h_x), int(L/h_x)))
-
-# Dendríticas ativadas
-dendritica_ativ_anterior = np.zeros((int(L/h_x), int(L/h_x)))
-
-#***********************Declaracao das matrizes que vao guardar os valores do passo de tempo atual*********************
-
-mic_atual = np.zeros((int(L/h_x), int(L/h_x)))
-t_cito_atual = np.zeros((int(L/h_x), int(L/h_x)))
-olide_atual = np.zeros((int(L/h_x), int(L/h_x)))
-anticorpo_atual = np.zeros((int(L/h_x), int(L/h_x)))
-dendritica_conv_atual = np.zeros((int(L/h_x), int(L/h_x)))
-dendritica_ativ_atual = np.zeros((int(L/h_x), int(L/h_x)))
 
 # Modelo linfonodo
 def init_lymph(linfonodo_eqs, estable_B, estable_T_c, estable_T_h):
     linfonodo_eqs[0]= 0    # Dendritic cells
-    linfonodo_eqs[1]= 0.2  # Cytotoxic T cells
-    linfonodo_eqs[2]= 0.4  # Helper T cells
-    linfonodo_eqs[3]= estable_B    # B cells
+    linfonodo_eqs[1]= 0  # Cytotoxic T cells
+    linfonodo_eqs[2]= 0  # Helper T cells
+    linfonodo_eqs[3]= 0    # B cells
     linfonodo_eqs[4]= 0    # Antibodies
+    linfonodo_eqs[5]= 0 # Plasma cells
 
-#Valores das populaçoes que migram que estão em contato com os vasos sanguineos ou linfaticos
-DendriticasTecido = 0
-AnticorposTecido = 0
-TcitotoxicaTecido = 0
 
-for i in range(int(L/h_x)):
-    for j in range(int(L/h_x)):
-        if theta_LV[i][j] == 1:
-            DendriticasTecido += dendritica_ativ_anterior[i][j]
-        if theta_BV[i][j] == 1:
-            AnticorposTecido += anticorpo_anterior[i][j]
-            TcitotoxicaTecido += t_cito_anterior[i][j]
 
 #**********************Funcao print dos resultados*************************
 
@@ -171,11 +131,11 @@ def printMesh(time, population, type):
     plt.savefig('../results/'+type+'/fig'+'{:.4f}'.format(time*h_t)+'.png', dpi = 300)
     plt.clf()
 
-d_mic = (60*24*6.6/(2.5**2))*10**-5
+# d_mic = 60*24/(2.5**2)*6.6*10**-5
 
-def modelo(chi, d_mic, mu_m, r_m, d_dc, d_da, d_t_cit, d_anti, lamb_f_m, b_d, r_dc, r_t, mu_dc, gamma_D, gamma_F, gamma_T, alpha_T_h, alpha_T_c, alpha_B, b_T, b_Tc, b_rho, b_rho_b, rho_T, rho_Tc, rho_B, rho_F, estable_T_h, estable_B, estable_T_c):
+def modelo(chi, d_mic, mu_m, r_m, d_dc, d_da, d_t_cit, d_anti, lamb_f_m, b_d, r_dc, r_t, mu_dc, gamma_D, gamma_F, gamma_T, alpha_T_h, alpha_T_c, alpha_B, alpha_P, b_T, b_Tc, b_rho, b_rho_b, rho_T, rho_Tc, rho_B, rho_P, b_rho_p, rho_F, estable_T_h, estable_B, estable_P, estable_T_c):
 # def modelo(mu_m, r_m, lamb_f_m):    
-    linfonodo_eqs = np.zeros(5)
+    linfonodo_eqs = np.zeros(6)
     
     V_BV = 0
     V_LV = 0
@@ -196,6 +156,9 @@ def modelo(chi, d_mic, mu_m, r_m, d_dc, d_da, d_t_cit, d_anti, lamb_f_m, b_d, r_
 
     V_LN = 160
 
+    # IC
+    # microglia
+    mic_media = 350
     mic_anterior = np.zeros((int(L/h_x), int(L/h_x)))
 
     for i in range(int(L/h_x)):
@@ -212,11 +175,13 @@ def modelo(chi, d_mic, mu_m, r_m, d_dc, d_da, d_t_cit, d_anti, lamb_f_m, b_d, r_
     anticorpo_anterior = np.zeros((int(L/h_x), int(L/h_x)))
 
     # Dendríticas convencionais
-    
     dendritica_conv_anterior = np.zeros((int(L/h_x), int(L/h_x)))
 
     # Dendríticas ativadas
     dendritica_ativ_anterior = np.zeros((int(L/h_x), int(L/h_x)))
+
+    #***********************Declaracao das matrizes que vao guardar os valores do passo de tempo atual*********************
+
     mic_atual = np.zeros((int(L/h_x), int(L/h_x)))
     t_cito_atual = np.zeros((int(L/h_x), int(L/h_x)))
     olide_atual = np.zeros((int(L/h_x), int(L/h_x)))
@@ -238,6 +203,10 @@ def modelo(chi, d_mic, mu_m, r_m, d_dc, d_da, d_t_cit, d_anti, lamb_f_m, b_d, r_
             if theta_BV[i][j] == 1:
                 AnticorposTecido += anticorpo_anterior[i][j]
                 TcitotoxicaTecido += t_cito_anterior[i][j]
+    DendriticasTecido = DendriticasTecido/V_LV
+    AnticorposTecido = AnticorposTecido/V_BV
+    TcitotoxicaTecido = TcitotoxicaTecido/V_BV
+
     qoi = np.zeros(len(t))
     parameters = {
         "chi": chi, # Quimioatracao. valor por Dia
@@ -260,7 +229,7 @@ def modelo(chi, d_mic, mu_m, r_m, d_dc, d_da, d_t_cit, d_anti, lamb_f_m, b_d, r_
         "gamma_T": gamma_T, #Taxa de migração de T citotoxica para o tecido (procurar na literatura)
 
         "t_cito_media": 37,
-        "dc_media": dc_media,
+        "dc_media": 33,
         "mic_media": mic_media,
         "odc_media": 400,
 
@@ -268,6 +237,7 @@ def modelo(chi, d_mic, mu_m, r_m, d_dc, d_da, d_t_cit, d_anti, lamb_f_m, b_d, r_
         "alpha_T_h": alpha_T_h,
         "alpha_T_c": alpha_T_c,
         "alpha_B": alpha_B,
+        "alpha_P": alpha_P,
         "b_T": b_T,
         "b_Tc": b_Tc,
         "b_rho": b_rho,
@@ -275,9 +245,12 @@ def modelo(chi, d_mic, mu_m, r_m, d_dc, d_da, d_t_cit, d_anti, lamb_f_m, b_d, r_
         "rho_T": rho_T,
         "rho_Tc": rho_Tc,
         "rho_B": rho_B,
+        "rho_P": rho_P,
+        "b_rho_p": b_rho_p,
         "rho_F": rho_F,
         "estable_T_h": estable_T_h,
         "estable_B": estable_B,
+        "estable_P": estable_P,
         "estable_T_c": estable_T_c,
         "DendriticasTecido": DendriticasTecido,
         "AnticorposTecido": AnticorposTecido,
@@ -295,25 +268,15 @@ def modelo(chi, d_mic, mu_m, r_m, d_dc, d_da, d_t_cit, d_anti, lamb_f_m, b_d, r_
     bc_neumann_baixo = 0
     bc_neumann_esquerda = 0
 
-    DL_vetor = np.zeros(steps)
-    TL_c_vetor = np.zeros(steps)
-    TL_h_vetor = np.zeros(steps)
-    B_vetor = np.zeros(steps)
-    FL_vetor = np.zeros(steps)
-
-    DL_vetor[0] = linfonodo_eqs[0]
-    TL_c_vetor[0] = linfonodo_eqs[1]
-    TL_h_vetor[0] = linfonodo_eqs[2]
-    B_vetor[0] = linfonodo_eqs[3]
-    FL_vetor[0] = linfonodo_eqs[4]
 
     for k in range(1,steps):
-        dy = diferential(linfonodo_eqs, parameters)
-        DL_atual = linfonodo_eqs[0] + h_t*dy[0]
-        TL_c_atual = linfonodo_eqs[1] + h_t*dy[1]
-        TL_h_atual = linfonodo_eqs[2] + h_t*dy[2]
-        B_atual = linfonodo_eqs[3] + h_t*dy[3]
-        FL_atual = linfonodo_eqs[4] + h_t*dy[4]
+        results = odeint(diferential, linfonodo_eqs, [0,h_t], args=(parameters,))
+        DL_atual = results[1][0]
+        TL_c_atual = results[1][1]
+        TL_h_atual = results[1][2]
+        B_atual = results[1][3]
+        FL_atual = results[1][4]
+        PL_atual = results[1][5]
         
         for i in range(tam):
             for j in range(tam):
@@ -323,7 +286,6 @@ def modelo(chi, d_mic, mu_m, r_m, d_dc, d_da, d_t_cit, d_anti, lamb_f_m, b_d, r_
                 da = dendritica_ativ_anterior[i][j]
                 anticorpo = anticorpo_anterior[i][j]
                 t_cito = t_cito_anterior[i][j]
-                
                 # condição de contorno de Neumman microglia
                 mic_iposterior = mic_anterior[i+1][j] if i != tam-1 else microglia - 2*h_x*bc_neumann_baixo
                 mic_ianterior = mic_anterior[i-1][j] if i != 0 else microglia - 2*h_x*bc_neumann_cima
@@ -407,38 +369,37 @@ def modelo(chi, d_mic, mu_m, r_m, d_dc, d_da, d_t_cit, d_anti, lamb_f_m, b_d, r_
                 migracao_da = theta_LV[i][j]*parameters["gamma_D"]*(DL_atual - da)
 
                 dendritica_ativ_atual[i][j] = da + h_t*(difusao_da + ativacao_dc_da + migracao_da)
+
                 if microglia < 0:
                     print("Tempo do Erro: " + str(k*h_t) + " - Variavel microglia: " + str(microglia))
+                    exit(1)
                 if da < 0:
                     print("Tempo do Erro: " + str(k*h_t) + " - Variavel DA: " + str(da))
+                    exit(1)
                 if dc < 0:
                     print("Tempo do Erro: " + str(k*h_t) + " - Variavel dc: " + str(dc))
+                    exit(1)
                 if t_cito < 0:
                     print("Tempo do Erro: " + str(k*h_t) + " - Variavel t_cito: " + str(t_cito))
+                    exit(1)
                 if anticorpo < 0:
                     print("Tempo do Erro: " + str(k*h_t) + " - Variavel anticorpo: " + str(anticorpo))
+                    exit(1)
                 if oligo_destr < 0:
                     print("Tempo do Erro: " + str(k*h_t) + " - Variavel oligo_destr: " + str(oligo_destr))
-                
+                    exit(1)
         olide_anterior = np.copy(olide_atual)
         dendritica_conv_anterior = np.copy(dendritica_conv_atual)
         dendritica_ativ_anterior = np.copy(dendritica_ativ_atual)
         t_cito_anterior = np.copy(t_cito_atual)
         anticorpo_anterior = np.copy(anticorpo_atual)
         mic_anterior = np.copy(mic_atual)
-
-        #calcula QoI
-        aux_qoi = 0
-        for i in range(tam):
-            for j in range(tam):
-                aux_qoi = aux_qoi + olide_atual[i][j]
-        qoi[k] = aux_qoi
+        
         #Atualização da concentração das populações que migram.
         #Valores das populaçoes que migram que estão em contato com os vasos sanguineos ou linfaticos
         DendriticasTecido = 0
         AnticorposTecido = 0
         TcitotoxicaTecido = 0
-
         for i in range(int(L/h_x)):
             for j in range(int(L/h_x)):
                 if theta_LV[i][j] == 1:
@@ -447,16 +408,18 @@ def modelo(chi, d_mic, mu_m, r_m, d_dc, d_da, d_t_cit, d_anti, lamb_f_m, b_d, r_
                     AnticorposTecido += anticorpo_atual[i][j]
                     TcitotoxicaTecido += t_cito_atual[i][j]
 
-        parameters["TcitotoxicaTecido"] = TcitotoxicaTecido
-        parameters["DendriticasTecido"] = DendriticasTecido
-        parameters["AnticorposTecido"] = AnticorposTecido
+        parameters["TcitotoxicaTecido"] = TcitotoxicaTecido/V_BV
+        parameters["DendriticasTecido"] = DendriticasTecido/V_LV
+        parameters["AnticorposTecido"] = AnticorposTecido/V_BV
+        linfonodo_eqs = [DL_atual, TL_c_atual, TL_h_atual, B_atual, FL_atual, PL_atual]
+
+        #calcula QoI
+        aux_qoi = 0
+        for i in range(tam):
+            for j in range(tam):
+                aux_qoi = aux_qoi + olide_atual[i][j]
+        qoi[k] = aux_qoi
         
-        linfonodo_eqs = [DL_atual, TL_c_atual, TL_h_atual, B_atual, FL_atual]
-        DL_vetor[k] = DL_atual
-        TL_c_vetor[k] = TL_c_atual
-        TL_h_vetor[k] = TL_h_atual
-        B_vetor[k] = B_atual
-        FL_vetor[k] = FL_atual
     print("Terminei de rodar uma vez!")
     outputFile = open("returns.txt", "a")
     outputFile.write(str(qoi[-1]) + "\n")
@@ -536,9 +499,6 @@ def avaliateOutputs():
     for i in range(1, len(outputs)-1, 2):
         #calcula delta Y
         deltay = (outputs[i] - outputs[i+1])/baseLineOutput
-        # print("+10%: " + str(outputs[i]) + " / -10%: " + str(outputs[i+1]))
-        #calcula delta p
-        #Por que tem que fazer esse cálculo?
         deltap = (parameters[j]*1.1 - parameters[j]*0.9)/parameters[j]
         print(deltap)
         #Coloca a divisão em um vetor
