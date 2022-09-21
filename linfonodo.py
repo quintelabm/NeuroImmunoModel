@@ -7,16 +7,17 @@ def diferential(y, t, parameters):
     TC = y[1]
     TH = y[2]
     B = y[3]
-    Igg = y[4]
-    PL = y[5]
+    PL = y[4]
+    Igg = y[5]
+    
 
     # Dendritic cells
 
-    dy[0] = parameters["gamma_D"] * (parameters["DendriticasTecido"] - DC) * (parameters["V_LV"] / parameters["V_LN"])
+    dy[0] = parameters["gamma_D"] * (parameters["DendriticasTecido"] - DC) * (parameters["V_LV"] / parameters["V_LN"]) - parameters["c_dl"]*DC
 
     # Cytotoxic T cells
 
-    ativacaoC = parameters["b_Tc"]*(parameters["rho_Tc"] * TC * DC - TC*DC)
+    ativacaoC = parameters["b_Tc"]*(parameters["rho_Tc"] * TC * DC - TC*TC*DC/parameters["estable_T_c"])
     homeostaseC = parameters["alpha_T_c"] * (parameters["estable_T_c"] - TC)
     migracaoC = (parameters["gamma_T"] * (TC - parameters["TcitotoxicaTecido"])) * (parameters["V_BV"] / parameters["V_LN"])
 
@@ -33,14 +34,16 @@ def diferential(y, t, parameters):
     ativacaoB = (parameters["b_rho_b"] * ((parameters["rho_B"] * TH * DC) - (TH * DC * B)))
     homeostaseB = parameters["alpha_B"] * (parameters["estable_B"] - B)
     dy[3] = ativacaoB + homeostaseB
-    
+
+    # #  plasma cells
+    ativacaoP = parameters["b_rho_p"] * (parameters["rho_P"] * TH * DC * B)
+    homeostaseP = parameters["alpha_P"] * (parameters["estable_P"] - PL)
+    dy[4] = ativacaoP + homeostaseP
+
     # # Antibodies
     producaoF = parameters["rho_F"] * PL
     migracaoF = ((parameters["gamma_F"] * (Igg - parameters["AnticorposTecido"])) * (parameters["V_BV"] / parameters["V_LN"]))
-    dy[4] = producaoF - migracaoF
+    dy[5] = producaoF - migracaoF
 
-    ativacaoP = parameters["b_rho_p"] * (parameters["rho_P"] * TH * DC * B)
-    homeostaseP = parameters["alpha_P"] * (parameters["estable_P"] - PL)
-    dy[5] = ativacaoP + homeostaseP
 
     return dy
