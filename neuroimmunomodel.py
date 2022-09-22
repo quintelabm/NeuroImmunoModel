@@ -469,15 +469,45 @@ print("Tempo de execução: " + str(final_time) + " min")
 #Transforma de dias para horas no plot
 # t = np.multiply(t,24)
 
-# plt.plot(t,DL_vetor, '-b', label="LN")
-# plt.plot(t,DCTPV_vetor, '--r', label="DCA-PVS")
-plt.plot(t,DCT_vetor, '--g', label="DCA-Tecido")
-plt.legend()
-plt.title("Lymph node - Activated dendritic cells")
-plt.xlabel("Time (days)")
-plt.ylabel("Concentration (Cells/$mm^2$)")
-plt.savefig('results/dc_linfonodo.png', dpi = 300)
-plt.clf()
+with open('results/dct', 'w') as f:
+    for line in DCT_vetor:
+        f.write(str(line))
+        f.write('\n')
+
+with open('results/dctpv', 'w') as f:
+    for line in DCTPV_vetor:
+        f.write(str(line))
+        f.write('\n')
+
+with open('results/dcl', 'w') as f:
+    for line in DL_vetor:
+        f.write(str(line))
+        f.write('\n')
+
+with open('results/tc', 'w') as f:
+    for line in TL_c_vetor:
+        f.write(str(line))
+        f.write('\n')
+
+with open('results/th', 'w') as f:
+    for line in TL_h_vetor:
+        f.write(str(line))
+        f.write('\n')
+
+with open('results/bl', 'w') as f:
+    for line in B_vetor:
+        f.write(str(line))
+        f.write('\n')
+
+with open('results/pl', 'w') as f:
+    for line in PL_vetor:
+        f.write(str(line))
+        f.write('\n')
+
+with open('results/fl', 'w') as f:
+    for line in FL_vetor:
+        f.write(str(line))
+        f.write('\n')
 
 plt.plot(t,TL_c_vetor)
 plt.title("Lymph node - T $CD8^+$")
@@ -512,4 +542,15 @@ plt.title("Lymph node - Plasma-cells")
 plt.xlabel("Time (days)")
 plt.ylabel("Concentration (Molecules/$mm^2$)")
 plt.savefig('results/pl_cell_linfonodo.png', dpi = 300)
+plt.clf()
+
+plt.plot(t,DL_vetor, '-b', label="LN")
+# plt.plot(t,DCTPV_vetor, '--r', label="DCA-PVS")
+# plt.plot(t,DCT_vetor, '--g', label="DCA-Tecido")
+plt.legend()
+# plt.yscale('log')
+plt.title("Lymph node - Activated dendritic cells")
+plt.xlabel("Time (days)")
+plt.ylabel("Concentration (Cells/$mm^2$)")
+plt.savefig('results/dc_linfonodo.png', dpi = 300)
 plt.clf()
