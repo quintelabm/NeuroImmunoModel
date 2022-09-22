@@ -36,7 +36,7 @@ x = np.linspace(0, L, int(L/h_x))
 tam = len(x)
 steps = len(t)
 
-num_figuras = 1
+num_figuras = T_final
 intervalo_figs = int(steps/num_figuras)
 
 def verifica_cfl(difusao_mic, difusao_dc, difusao_da, quimiotaxia_dc, quimiotaxia_mic):
@@ -441,7 +441,7 @@ for k in range(1,steps):
     parameters["AnticorposTecido"] = AnticorposTecido/V_BV
     DCT_vetor[k] = DCT
     DCTPV_vetor[k] = DendriticasTecido
-    linfonodo_eqs = [DL_atual, TL_c_atual, TL_h_atual, B_atual, FL_atual, PL_atual]
+    linfonodo_eqs = [DL_atual, TL_c_atual, TL_h_atual, B_atual, PL_atual, FL_atual]
     DL_vetor[k] = DL_atual
     TL_c_vetor[k] = TL_c_atual
     TL_h_vetor[k] = TL_h_atual
@@ -469,8 +469,8 @@ print("Tempo de execução: " + str(final_time) + " min")
 #Transforma de dias para horas no plot
 # t = np.multiply(t,24)
 
-plt.plot(t,DL_vetor, '-b', label="LN")
-plt.plot(t,DCTPV_vetor, '--r', label="DCA-PVS")
+# plt.plot(t,DL_vetor, '-b', label="LN")
+# plt.plot(t,DCTPV_vetor, '--r', label="DCA-PVS")
 plt.plot(t,DCT_vetor, '--g', label="DCA-Tecido")
 plt.legend()
 plt.title("Lymph node - Activated dendritic cells")
