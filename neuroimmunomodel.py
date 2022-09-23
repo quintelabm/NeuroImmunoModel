@@ -212,6 +212,7 @@ parameters = {
     "b_d": 0.001, # taxa de ativacao de dc por odc destruidos(procurar na literatura)
     "r_dc": 0.001, # taxa de coleta de odc destruidos pelas DCs (procurar na literatura)
     "r_t": 0.1 , # agressividade de t citotoxica(procurar na literatura)
+    "c_mic": 0.1, # decaimento natural micróglia
 
     "mu_dc": 60*24*3*10**-4, #Taxa de producao de células dendríticas (procurar na literatura)
     "gamma_D": 0.01, #Taxa de migração de DC ativadas para o linfonodo (procurar na literatura)
@@ -222,14 +223,14 @@ parameters = {
     "dc_media": dc_media,
     "mic_media": mic_media,
     "odc_media": 400,
-
+    
     "c_dc": 0.1,
     "c_da": 0.1,
     "c_dl": 0.1,
     "alpha_T_h": 0.1,
     "alpha_T_c": 0.1,
     "alpha_B": 0.1,
-    "alpha_P": 0,#1,
+    "alpha_P": 1,
     "b_T": 0.17,
     "b_Tc": 0.017,
     "b_rho": 0.6,#10,
@@ -357,8 +358,9 @@ for k in range(1,steps):
             quimiotaxia_mic = parameters["chi"]*calculaQuimiotaxia(mic_jposterior, mic_janterior, mic_iposterior, mic_ianterior, microglia, parameters["mic_media"], gradiente_odc_i, gradiente_odc_j)
             difusao_mic = parameters["D_mic"]*calculaDifusao(mic_jposterior, mic_janterior, mic_iposterior, mic_ianterior, microglia)
             reacao_mic = parameters["mu_m"]*microglia*(parameters["mic_media"] - microglia)
+            clearance_mic = parameters["c_mic"]*microglia
             
-            mic_atual[i][j] = microglia + h_t*(difusao_mic + reacao_mic - quimiotaxia_mic)
+            mic_atual[i][j] = microglia + h_t*(difusao_mic + reacao_mic - quimiotaxia_mic - clearance_mic)
 
             #T citotóxica
             quimiotaxia_t_cito = parameters["chi"]*calculaQuimiotaxia(t_cito_jposterior, t_cito_janterior, t_cito_iposterior, t_cito_ianterior, t_cito, parameters["t_cito_media"], gradiente_odc_i, gradiente_odc_j)
@@ -426,10 +428,10 @@ for k in range(1,steps):
     DendriticasTecido = 0
     AnticorposTecido = 0
     TcitotoxicaTecido = 0
-    DCT = 0
+    DAT = 0
     for i in range(int(L/h_x)):
         for j in range(int(L/h_x)):
-            DCT += dendritica_ativ_atual[i][j]
+            DAT += dendritica_ativ_atual[i][j]
             if theta_LV[i][j] == 1:
                 DendriticasTecido += dendritica_ativ_atual[i][j]
             if theta_BV[i][j] == 1:
@@ -439,8 +441,8 @@ for k in range(1,steps):
     parameters["TcitotoxicaTecido"] = TcitotoxicaTecido/V_BV
     parameters["DendriticasTecido"] = DendriticasTecido/V_LV
     parameters["AnticorposTecido"] = AnticorposTecido/V_BV
-    DCT_vetor[k] = DCT
-    DCTPV_vetor[k] = DendriticasTecido
+    DAT_vetor[k] = DAT
+    DATPV_vetor[k] = DendriticasTecido
     linfonodo_eqs = [DL_atual, TL_c_atual, TL_h_atual, B_atual, PL_atual, FL_atual]
     DL_vetor[k] = DL_atual
     TL_c_vetor[k] = TL_c_atual
@@ -469,13 +471,13 @@ print("Tempo de execução: " + str(final_time) + " min")
 #Transforma de dias para horas no plot
 # t = np.multiply(t,24)
 
-with open('results/dct', 'w') as f:
-    for line in DCT_vetor:
+with open('results/daat', 'w') as f:
+    for line in DAT_vetor:
         f.write(str(line))
         f.write('\n')
 
-with open('results/dctpv', 'w') as f:
-    for line in DCTPV_vetor:
+with open('results/datpv', 'w') as f:
+    for line in DATPV_vetor:
         f.write(str(line))
         f.write('\n')
 
@@ -545,8 +547,8 @@ plt.savefig('results/pl_cell_linfonodo.png', dpi = 300)
 plt.clf()
 
 plt.plot(t,DL_vetor, '-b', label="LN")
-# plt.plot(t,DCTPV_vetor, '--r', label="DCA-PVS")
-# plt.plot(t,DCT_vetor, '--g', label="DCA-Tecido")
+# plt.plot(t,DATPV_vetor, '--r', label="DCA-PVS")
+# plt.plot(t,DAT_vetor, '--g', label="DCA-Tecido")
 plt.legend()
 # plt.yscale('log')
 plt.title("Lymph node - Activated dendritic cells")
