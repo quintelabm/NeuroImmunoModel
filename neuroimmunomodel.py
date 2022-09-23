@@ -229,7 +229,7 @@ parameters = {
     "alpha_T_h": 0.1,
     "alpha_T_c": 0.1,
     "alpha_B": 0.1,
-    "alpha_P": 1,
+    "alpha_P": 0,#1,
     "b_T": 0.17,
     "b_Tc": 0.017,
     "b_rho": 0.6,#10,
