@@ -13,11 +13,11 @@ sns.set()
 def createDirectories():
     os.system("mkdir results")
     os.system("mkdir results/odc")
-    os.system("mkdir results/microglia")
+    os.system("mkdir results/mic")
     os.system("mkdir results/dc")
     os.system("mkdir results/tke")
     os.system("mkdir results/da")
-    os.system("mkdir results/anticorpo")
+    os.system("mkdir results/ant")
 
 createDirectories()
 
@@ -140,9 +140,9 @@ dendritica_conv_atual = np.zeros((int(L/h_x), int(L/h_x)))
 dendritica_ativ_atual = np.zeros((int(L/h_x), int(L/h_x)))
 
 # Modelo linfonodo
-estable_B = 2.4*10**1
-estable_T_c = 4*10**1
-estable_T_h = 8.4*10**1
+estable_B = 1.24
+estable_T_c = 4*10**0
+estable_T_h = 8.4*10**0
 linfonodo_eqs = np.zeros(6)
 linfonodo_eqs[0]= 0    # Dendritic cells
 linfonodo_eqs[1]= 0  # Cytotoxic T cells
@@ -170,11 +170,11 @@ TcitotoxicaTecido = TcitotoxicaTecido/V_BV
 
 populationTitle = {
     "odc": "Destroyed oligodendrocytes",
-    "microglia": "Microglia",
+    "mic": "Microglia",
     "dc": "Conventional dendritic cells",
     "da": "Activated dendritic cells",
     "tke": "T $CD8^+$",
-    "anticorpo": "Antibodies igG"
+    "ant": "Antibodies igG"
 }
 
 def printMesh(time, population, type):
@@ -189,11 +189,11 @@ def printMesh(time, population, type):
     plt.title(populationTitle[type])
     plt.xlabel("Millimeters")
     plt.ylabel("Millimeters")
-    if type == "anticorpo":
+    if type == "ant":
         plt.colorbar(cp, label="Concentration (molecules/$mm^2$)")
     else:
         plt.colorbar(cp, label="Concentration (cells/$mm^2$)")
-    plt.savefig('results/'+type+'/fig'+'{:.4f}'.format(time*h_t)+'.png', dpi = 300)
+    plt.savefig('results/'+type+'/fig'+'{:.4f}'.format(time*h_t)+type+'.png', dpi = 300)
     plt.clf()
 
 d_mic = 60*24/(2.5**2)*6.6*10**-5
@@ -243,7 +243,7 @@ parameters = {
     "rho_F": 5.1*10**-2,
     "estable_T_h": estable_T_h,
     "estable_B": estable_B,
-    "estable_P": 20,
+    "estable_P": 0.53,
     "estable_T_c": estable_T_c,
     "DendriticasTecido": DendriticasTecido,
     "AnticorposTecido": AnticorposTecido,
@@ -284,11 +284,11 @@ PL_vetor[0] = linfonodo_eqs[4]
 FL_vetor[0] = linfonodo_eqs[5]
 
 printMesh(0,olide_anterior, "odc")
-printMesh(0,mic_anterior, "microglia")
+printMesh(0,mic_anterior, "mic")
 printMesh(0,dendritica_conv_anterior, "dc")
 printMesh(0,dendritica_ativ_anterior, "da")
 printMesh(0,t_cito_anterior, "tke")
-printMesh(0,anticorpo_anterior, "anticorpo")
+printMesh(0,anticorpo_anterior, "ant")
 
 #Inicio da contagem do tempo
 tic = time.perf_counter()
@@ -453,11 +453,11 @@ for k in range(1,steps):
 
     if k%intervalo_figs ==0 or k == steps-1:
         printMesh(k,olide_anterior, "odc")
-        printMesh(k,mic_anterior, "microglia")
+        printMesh(k,mic_anterior, "mic")
         printMesh(k,dendritica_conv_anterior, "dc")
         printMesh(k,dendritica_ativ_anterior, "da")
         printMesh(k,t_cito_anterior, "tke")
-        printMesh(k,anticorpo_anterior, "anticorpo")
+        printMesh(k,anticorpo_anterior, "ant")
         print("Tempo: "+ str(k*h_t))
         print("IgG-T: " + str(AnticorposTecido))
 
