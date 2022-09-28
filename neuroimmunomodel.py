@@ -140,9 +140,9 @@ dendritica_conv_atual = np.zeros((int(L/h_x), int(L/h_x)))
 dendritica_ativ_atual = np.zeros((int(L/h_x), int(L/h_x)))
 
 # Modelo linfonodo
-estable_B = 1.24
-estable_T_c = 4*10**0
-estable_T_h = 8.4*10**0
+estable_B = 25
+estable_T_c = 40
+estable_T_h = 84
 linfonodo_eqs = np.zeros(6)
 linfonodo_eqs[0]= 0    # Dendritic cells
 linfonodo_eqs[1]= 0  # Cytotoxic T cells
@@ -216,8 +216,8 @@ parameters = {
 
     "mu_dc": 60*24*3*10**-4, #Taxa de producao de células dendríticas (procurar na literatura)
     "gamma_D": 0.01, #Taxa de migração de DC ativadas para o linfonodo (procurar na literatura)
-    "gamma_F": 0.03, #Taxa de migração de anticorpos para o tecido (procurar na literatura)
-    "gamma_T": 0.02, #Taxa de migração de T citotoxica para o tecido (procurar na literatura)
+    "gamma_F": 0.3, #Taxa de migração de anticorpos para o tecido (procurar na literatura)
+    "gamma_T": 0.2, #Taxa de migração de T citotoxica para o tecido (procurar na literatura)
 
     "t_cito_media": 37,
     "dc_media": dc_media,
@@ -243,7 +243,7 @@ parameters = {
     "rho_F": 5.1*10**-2,
     "estable_T_h": estable_T_h,
     "estable_B": estable_B,
-    "estable_P": 0.53,
+    "estable_P": 2.5,
     "estable_T_c": estable_T_c,
     "DendriticasTecido": DendriticasTecido,
     "AnticorposTecido": AnticorposTecido,
@@ -471,7 +471,7 @@ print("Tempo de execução: " + str(final_time) + " min")
 #Transforma de dias para horas no plot
 # t = np.multiply(t,24)
 
-with open('results/daat', 'w') as f:
+with open('results/dat', 'w') as f:
     for line in DAT_vetor:
         f.write(str(line))
         f.write('\n')
