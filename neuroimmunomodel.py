@@ -221,7 +221,7 @@ parameters = {
     "mu_dc": 60*24*3*10**-4, #Taxa de producao de células dendríticas (procurar na literatura)
     "gamma_D": 0.01, #Taxa de migração de DC ativadas para o linfonodo (procurar na literatura)
     "gamma_F": 0.3, #Taxa de migração de anticorpos para o tecido (procurar na literatura)
-    "gamma_T": 0.2, #Taxa de migração de T citotoxica para o tecido (procurar na literatura)
+    "gamma_T": 2,#0.2, #Taxa de migração de T citotoxica para o tecido (procurar na literatura)
 
     "t_cito_media": 37,
     "dc_media": dc_media,
@@ -236,7 +236,7 @@ parameters = {
     "alpha_B": 0.1,
     "alpha_P": 1,
     "b_T": 0.17,
-    "b_Tc": 0.017,
+    "b_Tc": 0.001,#0.017,
     "b_rho": 0.6,#10,
     "b_rho_b": 3.02,#*10,
     "rho_T": 2,
@@ -245,6 +245,7 @@ parameters = {
     "rho_P": 3,
     "b_rho_p": 1.02,#*10**6,
     "rho_F": 5.1*10**-2,
+    "c_F": 0.01,
     "estable_T_h": estable_T_h,
     "estable_B": estable_B,
     "estable_P": 2.5,
