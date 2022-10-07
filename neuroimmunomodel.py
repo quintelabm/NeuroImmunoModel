@@ -1,4 +1,4 @@
-from cProfile import label
+import matplotlib 
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
@@ -186,7 +186,11 @@ def printMesh(time, population, type):
     levels = np.linspace(0, max_population, 50)
 
     cp = plt.contourf(x_pts, y_pts,population, levels=levels)
-    plt.title(populationTitle[type])
+    plt.title(populationTitle[type], fontsize=20)
+    matplotlib.rc('xtick', labelsize=15) 
+    matplotlib.rc('ytick', labelsize=16)
+    plt.rc('axes', labelsize=16)
+    plt.rc('font', size=15)
     plt.xlabel("Millimeters")
     plt.ylabel("Millimeters")
     if type == "ant":
