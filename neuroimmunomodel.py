@@ -25,7 +25,7 @@ gradiente = lambda ponto_posterior, ponto_anterior, valor_maximo: quimiotaxia(po
 quimiotaxia = lambda ponto_atual, valor_maximo: ponto_atual/(valor_maximo + ponto_atual)
 f_func = lambda populacao, valor_maximo: populacao*populacao/(valor_maximo + populacao)
 
-T_final = 28# Dia
+T_final = 28*5# Dia
 h_t = 0.0002
 
 L = 20  # Comprimento da malha
@@ -214,11 +214,10 @@ parameters = {
     "d_anti": 10*d_mic, # difusao anticorpo(procurar na literatura)
     "lamb_f_m": 5.702*10**-3,#5.702*10**-6 # taxa de anticorpos consumidos durante o processo de opsonização pela micróglia
     "b_d": 0.001, # taxa de ativacao de dc por odc destruidos(procurar na literatura)
-    "r_dc": 0.001, # taxa de coleta de odc destruidos pelas DCs (procurar na literatura)
     "r_t": 0.1 , # agressividade de t citotoxica(procurar na literatura)
     "c_mic": 0.1, # decaimento natural micróglia
-
     "mu_dc": 60*24*3*10**-4, #Taxa de producao de células dendríticas (procurar na literatura)
+
     "gamma_D": 0.01, #Taxa de migração de DC ativadas para o linfonodo (procurar na literatura)
     "gamma_F": 0.3, #Taxa de migração de anticorpos para o tecido (procurar na literatura)
     "gamma_T": 2,#0.2, #Taxa de migração de T citotoxica para o tecido (procurar na literatura)
@@ -231,6 +230,7 @@ parameters = {
     "c_dc": 0.1,
     "c_da": 0.1,
     "c_dl": 0.1,
+    "c_F": 0.01,
     "alpha_T_h": 0.1,
     "alpha_T_c": 0.1,
     "alpha_B": 0.1,
@@ -238,14 +238,13 @@ parameters = {
     "b_T": 0.17,
     "b_Tc": 0.001,#0.017,
     "b_rho": 0.6,#10,
-    "b_rho_b": 3.02,#*10,
+    "b_rho_b": 3,#*10,
+    "b_rho_p": 1.02,#*10**6,
     "rho_T": 2,
     "rho_Tc": 2,
     "rho_B": 11,#16,
     "rho_P": 3,
-    "b_rho_p": 1.02,#*10**6,
     "rho_F": 5.1*10**-2,
-    "c_F": 0.01,
     "estable_T_h": estable_T_h,
     "estable_B": estable_B,
     "estable_P": 2.5,
@@ -551,10 +550,7 @@ plt.ylabel("Concentration (Molecules/$mm^2$)")
 plt.savefig('results/pl_cell_linfonodo.png', dpi = 300)
 plt.clf()
 
-plt.plot(t,DL_vetor, '-b', label="LN")
-# plt.plot(t,DATPV_vetor, '--r', label="DCA-PVS")
-# plt.plot(t,DAT_vetor, '--g', label="DCA-Tecido")
-plt.legend()
+plt.plot(t,DL_vetor, '-b')
 # plt.yscale('log')
 plt.title("Lymph node - Activated dendritic cells")
 plt.xlabel("Time (days)")
