@@ -25,7 +25,7 @@ gradiente = lambda ponto_posterior, ponto_anterior, valor_maximo: quimiotaxia(po
 quimiotaxia = lambda ponto_atual, valor_maximo: ponto_atual/(valor_maximo + ponto_atual)
 f_func = lambda populacao, valor_maximo: populacao*populacao/(valor_maximo + populacao)
 
-T_final = 1# Dia
+T_final = 28*5# Dia
 h_t = 0.0002
 
 L = 20  # Comprimento da malha
@@ -294,6 +294,13 @@ printMesh(0,dendritica_ativ_anterior, "da")
 printMesh(0,t_cito_anterior, "tke")
 printMesh(0,anticorpo_anterior, "ant")
 
+def svfig(tempo,population, name):
+    with open('results/'+name+str(tempo), 'w') as f:
+        for line in population:
+            for column in line:
+                f.write(str(column)+' ')
+            f.write('\n')
+
 #Inicio da contagem do tempo
 tic = time.perf_counter()
 
@@ -464,6 +471,13 @@ for k in range(1,steps):
         printMesh(k,anticorpo_anterior, "ant")
         print("Tempo: "+ str(k*h_t))
         print("IgG-T: " + str(AnticorposTecido))
+        if int(k*h_t) == 14 or int(k*h_t) == 28 or int(k*h_t) == 35 or k == steps-1:
+            svfig(int(k*h_t),olide_atual, "odc")
+            svfig(int(k*h_t),mic_atual, "mic")
+            svfig(int(k*h_t),dendritica_conv_atual, "dc")
+            svfig(int(k*h_t),dendritica_ativ_atual, "da")
+            svfig(int(k*h_t),t_cito_atual, "tke")
+            svfig(int(k*h_t),anticorpo_atual, "ant")
 
 #Fim da contagem do tempo
 toc = time.perf_counter()
