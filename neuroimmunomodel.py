@@ -8,7 +8,7 @@ import os
 from scipy.integrate import odeint
 from linfonodo import diferential
 
-sns.set()
+# sns.set()
 
 def createDirectories():
     os.system("mkdir results")
@@ -25,7 +25,7 @@ gradiente = lambda ponto_posterior, ponto_anterior, valor_maximo: quimiotaxia(po
 quimiotaxia = lambda ponto_atual, valor_maximo: ponto_atual/(valor_maximo + ponto_atual)
 f_func = lambda populacao, valor_maximo: populacao*populacao/(valor_maximo + populacao)
 
-T_final = 28*5# Dia
+T_final = 1# Dia
 h_t = 0.0002
 
 L = 20  # Comprimento da malha
@@ -515,44 +515,48 @@ with open('results/fl', 'w') as f:
         f.write(str(line))
         f.write('\n')
 
-plt.plot(t,TL_c_vetor)
-plt.title("Lymph node - T $CD8^+$")
+matplotlib.rc('xtick', labelsize=15) 
+matplotlib.rc('ytick', labelsize=16)
+plt.rc('axes', labelsize=16)
+plt.rc('font', size=15)
+
+plt.plot(t,TL_c_vetor, "-r", linewidth=2)
+plt.title("Lymph node - T $CD8^+$", fontsize=20)
 plt.xlabel("Time (days)")
 plt.ylabel("Concentration (Cells/$mm^2$)")
 plt.savefig('results/t_cito_linfonodo.png', dpi = 300)
 plt.clf()
 
-plt.plot(t,TL_h_vetor)
-plt.title("Lymph node - T $CD4^+$")
+plt.plot(t,TL_h_vetor, "-r", linewidth=2)
+plt.title("Lymph node - T $CD4^+$", fontsize=20)
 plt.xlabel("Time (days)")
 plt.ylabel("Concentration (Cells/$mm^2$)")
 plt.savefig('results/t_helper_linfonodo.png', dpi = 300)
 plt.clf()
 
-plt.plot(t,B_vetor)
-plt.title("Lymph node - B Cells")
+plt.plot(t,B_vetor, "-r", linewidth=2)
+plt.title("Lymph node - B Cells", fontsize=20)
 plt.xlabel("Time (days)")
 plt.ylabel("Concentration (Cells/$mm^2$)")
 plt.savefig('results/b_cell_linfonodo.png', dpi = 300)
 plt.clf()
 
-plt.plot(t,FL_vetor)
-plt.title("Lymph node - Antibodies")
+plt.plot(t,FL_vetor, "-r", linewidth=2)
+plt.title("Lymph node - Antibodies", fontsize=20)
 plt.xlabel("Time (days)")
 plt.ylabel("Concentration (Molecules/$mm^2$)")
 plt.savefig('results/anticorpo_linfonodo.png', dpi = 300)
 plt.clf()
 
-plt.plot(t,PL_vetor)
-plt.title("Lymph node - Plasma-cells")
+plt.plot(t,PL_vetor, "-r", linewidth=2)
+plt.title("Lymph node - Plasma-cells", fontsize=20)
 plt.xlabel("Time (days)")
 plt.ylabel("Concentration (Molecules/$mm^2$)")
 plt.savefig('results/pl_cell_linfonodo.png', dpi = 300)
 plt.clf()
 
-plt.plot(t,DL_vetor, '-b')
-# plt.yscale('log')
-plt.title("Lymph node - Activated dendritic cells")
+plt.plot(t,DL_vetor, "-r", linewidth=2)
+plt.title("Lymph node - Activated dendritic cells", fontsize=20)
 plt.xlabel("Time (days)")
 plt.ylabel("Concentration (Cells/$mm^2$)")
 plt.savefig('results/dc_linfonodo.png', dpi = 300)
