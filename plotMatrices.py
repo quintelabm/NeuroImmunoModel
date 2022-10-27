@@ -19,7 +19,7 @@ populationTitle = {
     "ant": "Antibodies igG"
 }
 
-sztext = 20
+sztext = 12
 
 def printMesh(time, population, type):
 
@@ -30,17 +30,17 @@ def printMesh(time, population, type):
     levels = np.linspace(0, max_population, 50)
 
     cp = plt.contourf(x_pts, y_pts,population, levels = levels)
-    matplotlib.rc('xtick', labelsize = sztext) 
+    matplotlib.rc('xtick', labelsize = sztext*.8) 
     matplotlib.rc('ytick', labelsize = sztext)
     plt.rc('axes', labelsize = sztext)
     plt.rc('font', size = 15)
-    plt.xlabel("Millimeters")
-    plt.ylabel("Millimeters")
+    plt.xlabel("Millimeters",fontweight='bold')
+    plt.ylabel("Millimeters",fontweight='bold')
     if type == "ant":
-        plt.colorbar(cp, label="Concentration (molecules/$mm^2$)")
+        plt.colorbar(cp, label="Concentration ($molecules/mm^2$)")
     else:
-        plt.colorbar(cp, label="Concentration (cells/$mm^2$)")
-    plt.savefig('results/paperfigs/'+type+time+'.png', dpi = 300)
+        plt.colorbar(cp).set_label( label="Concentration ($cells/mm^2$)",size=15)
+    plt.savefig('results/paperfigs/'+type+time+'.png', dpi = 600)
     plt.clf()
 
 mic_atual = np.zeros(((int(L/h_x)), (int(L/h_x))))
@@ -52,19 +52,19 @@ dendritica_ativ_atual = np.zeros(((int(L/h_x)), (int(L/h_x))))
 
 for time in ['14', '28', '35', '139']:
 
-    with open("./results/odc"+time, 'r') as f:
-        lista = [line.split(' ')  for line in f]
-        for line in range(len(lista[0])-1):
-            for column in range(len(lista[0])-1):
-                olide_atual[line][column] = lista[line][column]
-        printMesh(time, olide_atual, "odc")
-
     with open("./results/mic"+time, 'r') as f:
         lista = [line.split(' ')  for line in f]
         for line in range(len(lista[0])-1):
             for column in range(len(lista[0])-1):
                 mic_atual[line][column] = lista[line][column]
         printMesh(time, mic_atual, "mic")
+
+    with open("./results/odc"+time, 'r') as f:
+        lista = [line.split(' ')  for line in f]
+        for line in range(len(lista[0])-1):
+            for column in range(len(lista[0])-1):
+                olide_atual[line][column] = lista[line][column]
+        printMesh(time, olide_atual, "odc")
 
     with open("./results/dc"+time, 'r') as f:
         lista = [line.split(' ')  for line in f]
