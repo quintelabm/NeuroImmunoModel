@@ -112,7 +112,7 @@ mic_anterior = np.zeros((int(L/h_x), int(L/h_x)))
 
 for i in range(int(L/h_x)):
     for j in range(int(L/h_x)):
-        if (i-int(L/h_x)/2)**2 + (j-int(L/h_x)/2)**2 < 20/(2.5**2):
+        if (i-int(L/h_x)/2)**2 + (j-int(L/h_x)/2)**2 < 5:
             mic_anterior[i][j] = mic_media/3.0
 
 # T citotóxica
@@ -177,6 +177,8 @@ populationTitle = {
     "ant": "Antibodies igG"
 }
 
+sztext = 20
+
 def printMesh(time, population, type):
 
     x_pts, y_pts = np.meshgrid(x, x)
@@ -185,12 +187,11 @@ def printMesh(time, population, type):
         max_population += 1
     levels = np.linspace(0, max_population, 50)
 
-    cp = plt.contourf(x_pts, y_pts,population, levels=levels)
-    plt.title(populationTitle[type], fontsize=20)
-    matplotlib.rc('xtick', labelsize=15) 
-    matplotlib.rc('ytick', labelsize=16)
-    plt.rc('axes', labelsize=16)
-    plt.rc('font', size=15)
+    cp = plt.contourf(x_pts, y_pts,population, levels = levels)
+    matplotlib.rc('xtick', labelsize = sztext*.8) 
+    matplotlib.rc('ytick', labelsize = sztext)
+    plt.rc('axes', labelsize = sztext)
+    plt.rc('font', size = 15)
     plt.xlabel("Millimeters")
     plt.ylabel("Millimeters")
     if type == "ant":
